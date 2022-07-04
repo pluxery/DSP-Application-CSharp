@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DA9DC4B9-0E7F-4606-8741-BD475E5CF8BB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WindowsFormsApplication2</RootNamespace>
+    <AssemblyName>WindowsFormsApplication2</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FftSharp, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FftSharp.1.1.2\lib\netstandard2.0\FftSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MathNet.Numerics.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Spectrogram, Version=1.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Spectrogram.1.4.4\lib\netstandard2.0\Spectrogram.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.6.1\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Correlation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Correlation.Designer.cs">
+      <DependentUpon>Correlation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FFT_algorithm.cs" />
+    <Compile Include="FFTMode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FFTMode.Designer.cs">
+      <DependentUpon>FFTMode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IntervalFFT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntervalFFT.Designer.cs">
+      <DependentUpon>IntervalFFT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SmoothDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SmoothDialog.Designer.cs">
+      <DependentUpon>SmoothDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModelImage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelImage.Designer.cs">
+      <DependentUpon>ModelImage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Signal.cs" />
+    <Compile Include="FFT.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FFT.Designer.cs">
+      <DependentUpon>FFT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Spectrogram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Spectrogram.Designer.cs">
+      <DependentUpon>Spectrogram.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Super.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Super.Designer.cs">
+      <DependentUpon>Super.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SaveOption.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SaveOption.Designer.cs">
+      <DependentUpon>SaveOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IntervalOsc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IntervalOsc.Designer.cs">
+      <DependentUpon>IntervalOsc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Model.Designer.cs">
+      <DependentUpon>Model.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModelInputParams.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModelInputParams.Designer.cs">
+      <DependentUpon>ModelInputParams.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Oscillogram.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Oscillogram.Designer.cs">
+      <DependentUpon>Oscillogram.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SignalInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SignalInfo.Designer.cs">
+      <DependentUpon>SignalInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Navigation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Navigation.Designer.cs">
+      <DependentUpon>Navigation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Statistic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Statistic.Designer.cs">
+      <DependentUpon>Statistic.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Correlation.resx">
+      <DependentUpon>Correlation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FFTMode.resx">
+      <DependentUpon>FFTMode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IntervalFFT.resx">
+      <DependentUpon>IntervalFFT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SmoothDialog.resx">
+      <DependentUpon>SmoothDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModelImage.resx">
+      <DependentUpon>ModelImage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FFT.resx">
+      <DependentUpon>FFT.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IntervalOsc.resx">
+      <DependentUpon>IntervalOsc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Model.resx">
+      <DependentUpon>Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModelInputParams.resx">
+      <DependentUpon>ModelInputParams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Oscillogram.resx">
+      <DependentUpon>Oscillogram.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Spectrogram.resx">
+      <DependentUpon>Spectrogram.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Super.resx">
+      <DependentUpon>Super.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SaveOption.resx">
+      <DependentUpon>SaveOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SignalInfo.resx">
+      <DependentUpon>SignalInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Navigation.resx">
+      <DependentUpon>Navigation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Statistic.resx">
+      <DependentUpon>Statistic.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="model_img\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
