@@ -5,14 +5,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
-//СДЕЛАТЬ НОРМАЛЬНУЮ РАБОТУ С ОКНОМ
-//добавление новых графиков в список (а не на новое окно), удаление по требованию, сохранение в списке навигации
 
-namespace WindowsApp //TODO ЕСЛИ SIGNAL = NULL ТО все ломается
+namespace WindowsApp 
 {
-    //тут будет что то в духе осцилограм, но только для моделирования
-    //при открытие его вме остальные окна будут скрываться
-    //при его закрытии они будут раскарываться
     public partial class Model : Form
     {
         bool localScaleMode = false;

@@ -51,7 +51,7 @@ namespace WindowsApp
             {
                 W = Width;
                 H = (Height - prob * 3) / charts.Count;
-                SetScaleY();
+                SetScale();
             }
         }
 
@@ -361,10 +361,10 @@ namespace WindowsApp
                 }
             }
 
-            SetScaleY();
+            SetScale();
         }
 
-        private void SetScaleY()
+        private void SetScale()
         {
             for (int i = 0; i < charts.Count; i++)
             {
@@ -373,7 +373,6 @@ namespace WindowsApp
                     charts[i][j].Bounds = new Rectangle(0, H * i, W, H);
                     if (localScaleMode)
                     {
-                        //ну тут O(n) алгоритм...
                         double localMin = Double.MaxValue;
                         double localMax = Double.MinValue;
 
@@ -433,7 +432,7 @@ namespace WindowsApp
         {
             signal.BeginRangeFft = e.ChartArea.AxisX.ScaleView.Position;
             signal.setEndRangeFFT(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
-            SetScaleY();
+            SetScale();
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -464,7 +463,7 @@ namespace WindowsApp
                 }
 
                 charts.RemoveAt(k);
-                SetScaleY();
+                SetScale();
                 signal.MainForm.UnCheckItemDPF(channelsList[k]);
                 channelsList.RemoveAt(k);
             }
@@ -484,7 +483,7 @@ namespace WindowsApp
                 локальныйМасштабToolStripMenuItem.CheckState = CheckState.Checked;
                 глобальныйМасштабToolStripMenuItem.CheckState = CheckState.Unchecked;
                 localScaleMode = true;
-                SetScaleY();
+                SetScale();
             }
         }
 
@@ -495,7 +494,7 @@ namespace WindowsApp
                 локальныйМасштабToolStripMenuItem.CheckState = CheckState.Unchecked;
                 глобальныйМасштабToolStripMenuItem.CheckState = CheckState.Checked;
                 localScaleMode = false;
-                SetScaleY();
+                SetScale();
             }
         }
 
@@ -556,7 +555,7 @@ namespace WindowsApp
                 локальныйМасштабToolStripMenuItem.Checked = true;
 
 
-                SetScaleY();
+                SetScale();
                 if (charts.Count > 0)
                 {
                     isLogY = !isLogY;
@@ -626,7 +625,7 @@ namespace WindowsApp
                             SpectralPointsY = GetSpectralYPointsByPage(page, channelsList[channelIndex]);
                             for (int x = 0; x < N_part; x++)
                                 chart[page].Series[0].Points.AddXY(x * (signal.Frequency / N_part), SpectralPointsY[x]);
-                            SetScaleY();
+                            SetScale();
                         }
 
                         channelIndex++;
@@ -660,7 +659,7 @@ namespace WindowsApp
                                 x++;
                             }
 
-                            SetScaleY();
+                            SetScale();
                         }
 
                         channelIndex++;
@@ -686,7 +685,7 @@ namespace WindowsApp
                         pointsY = GetSpectralYPointsByPage(page, channelsList[channelIndex]);
                         for (int x = 0; x < N_part; x++)
                             chart[page].Series[0].Points.AddXY(x * (signal.Frequency / N_part), pointsY[x]);
-                        SetScaleY();
+                        SetScale();
                     }
 
                     channelIndex++;
