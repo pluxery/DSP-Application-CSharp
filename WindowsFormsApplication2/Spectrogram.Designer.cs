@@ -37,21 +37,24 @@ namespace WindowsApp
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.toolBar1 = new System.Windows.Forms.ToolBar();
             this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize) (this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize) (this.chart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.trackBar2)).BeginInit();
             this.SuspendLayout();
             // 
             // trackBar1
             // 
             this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBar1.Location = new System.Drawing.Point(12, 485);
+            this.trackBar1.Location = new System.Drawing.Point(93, 491);
             this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(840, 56);
+            this.trackBar1.Size = new System.Drawing.Size(729, 44);
             this.trackBar1.TabIndex = 1;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
@@ -61,7 +64,7 @@ namespace WindowsApp
             this.toolBar1.Location = new System.Drawing.Point(0, 0);
             this.toolBar1.Name = "toolBar1";
             this.toolBar1.ShowToolTips = true;
-            this.toolBar1.Size = new System.Drawing.Size(882, 42);
+            this.toolBar1.Size = new System.Drawing.Size(834, 42);
             this.toolBar1.TabIndex = 2;
             // 
             // button1
@@ -76,19 +79,6 @@ namespace WindowsApp
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.grey_button_Click);
             // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-            this.button2.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.button2.Location = new System.Drawing.Point(286, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "ICE";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.blue_button_Click);
-            // 
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
@@ -99,7 +89,7 @@ namespace WindowsApp
             this.button3.TabIndex = 5;
             this.button3.Text = "HOT";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.red_button_Click);
+            this.button3.Click += new System.EventHandler(this.cool_button_Click);
             // 
             // chart1
             // 
@@ -123,7 +113,7 @@ namespace WindowsApp
             legend1.Name = "Legend1";
             legend1.TitleAlignment = System.Drawing.StringAlignment.Far;
             this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(0, 41);
+            this.chart1.Location = new System.Drawing.Point(0, 43);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
@@ -131,7 +121,7 @@ namespace WindowsApp
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(882, 426);
+            this.chart1.Size = new System.Drawing.Size(834, 433);
             this.chart1.TabIndex = 7;
             this.chart1.Text = "chart1";
             // 
@@ -156,18 +146,47 @@ namespace WindowsApp
             this.button5.TabIndex = 9;
             this.button5.Text = "COOL";
             this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click_1);
+            this.button5.Click += new System.EventHandler(this.hot_button_Click_1);
+            // 
+            // trackBar2
+            // 
+            this.trackBar2.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.trackBar2.Location = new System.Drawing.Point(93, 553);
+            this.trackBar2.Name = "trackBar2";
+            this.trackBar2.Size = new System.Drawing.Size(729, 44);
+            this.trackBar2.TabIndex = 10;
+            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.Location = new System.Drawing.Point(12, 492);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 44);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Яркость";
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label2.Location = new System.Drawing.Point(12, 554);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(75, 29);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Нахлест";
             // 
             // Spectrogram
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(882, 553);
+            this.ClientSize = new System.Drawing.Size(834, 604);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.trackBar2);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.toolBar1);
             this.Controls.Add(this.trackBar1);
@@ -175,12 +194,18 @@ namespace WindowsApp
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Спектограмма";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Spectrogram_FormClosed);
+            this.Resize += new System.EventHandler(this.resize);
             ((System.ComponentModel.ISupportInitialize) (this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize) (this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.trackBar2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-            this.Resize += new System.EventHandler(this.resize);
         }
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+
+        private System.Windows.Forms.TrackBar trackBar2;
 
         private System.Windows.Forms.Button button5;
 
@@ -188,7 +213,6 @@ namespace WindowsApp
 
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
 
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
 
         private System.Windows.Forms.ToolBar toolBar1;

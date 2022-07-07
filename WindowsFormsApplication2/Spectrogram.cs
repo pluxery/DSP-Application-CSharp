@@ -23,13 +23,13 @@ namespace WindowsApp
 
         private int width { get; set; } = 900;
         private int height { get; set; } = 200;
+        private double coeff_n { get; set; } = 1.5;
         private double[] A { get; set; }
 
         private List<byte[][]> Palletes;
         private byte[][] grey;
-        private byte[][] copper;
-        private byte[][] hot;
         private byte[][] cool;
+        private byte[][] hot;
 
         private int curChannelIndex;
 
@@ -37,7 +37,12 @@ namespace WindowsApp
         public Spectrogram(MainForm parrentForm)
         {
             InitializeComponent();
-            trackBar1.Value = trackBar1.Maximum / 2;
+            trackBar1.Maximum = 100;
+            trackBar1.Value = trackBar1.Maximum / 3;
+            trackBar1.TickStyle = TickStyle.None;
+            trackBar2.Maximum = 8;
+            trackBar2.Minimum = 0;
+            trackBar2.Value = 3;
         }
 
         private void resize(object sender, EventArgs e)
@@ -142,7 +147,7 @@ namespace WindowsApp
 
             double Section_Base = (signal.EndRangeOsci - signal.BeginRangeOsci) / Ns;
 
-            double coeff_n = 1.5;
+            
             int Section_N = (int) (Section_Base * coeff_n);
 
             int NN;
@@ -239,9 +244,7 @@ namespace WindowsApp
                     A[ns + i * Ns] = amplitude[i];
                 }
             }
-
-
-            Coeff = trackBar1.Value;
+            
             maxA = A.Max();
         }
 
@@ -250,30 +253,26 @@ namespace WindowsApp
             grey = new byte[256][];
             for (var i = 0; i < 256; i++) grey[i] = new byte[] {(byte) i, (byte) i, (byte) i};
 
-            copper = new byte[256][];
-            for (var i = 0; i <= 85; i++) copper[i] = new byte[] {(byte) i, (byte) ((i) * 8), (byte) ((i) * 3)};
-            for (var i = 86; i <= 170; i++) copper[i] = new byte[] {(byte) 0, (byte) (i * 8), (byte) ((i) * 3)};
-            for (var i = 171; i <= 255; i++) copper[i] = new byte[] {0, 170, 255};
-
-            hot = new byte[256][];
-            for (var i = 0; i <= 85; i++) hot[i] = new byte[] {0, 0, (byte) (i * 3)};
-            for (var i = 86; i <= 170; i++) hot[i] = new byte[] {0, (byte) ((i - 85) * 3), 255};
-            for (var i = 171; i <= 255; i++) hot[i] = new byte[] {(byte) ((i - 170) * 3), 255, 255};
-
             cool = new byte[256][];
             for (var i = 0; i <= 85; i++) cool[i] = new byte[] {255, (byte) (i * 3), 0};
             for (var i = 86; i <= 170; i++) cool[i] = new byte[] {0, 255, (byte) ((i - 85) * 3)};
             for (var i = 171; i <= 255; i++) cool[i] = new byte[] {0, 0, (byte) ((i - 170) * 3)};
 
-            Palletes = new List<byte[][]>(4);
+            hot = new byte[256][];
+            for (var i = 0; i <= 85; i++) hot[i] = new byte[] {0, 0, (byte) (i * 3)};
+            for (var i = 86; i <= 170; i++) hot[i] = new byte[] {0, (byte) ((i - 85) * 3), 255};
+            for (var i = 171; i <= 255; i++) hot[i] = new byte[] {(byte) ((i - 170) * 3), 255, 255};
+            
+
+            Palletes = new List<byte[][]>(3);
             Palletes.Add(grey);
-            Palletes.Add(copper);
-            Palletes.Add(hot);
             Palletes.Add(cool);
+            Palletes.Add(hot);
         }
 
         private void DrawPicture()
         {
+            Coeff = trackBar1.Value;
             if (chart1.Images.Count != 0)
             {
                 chart1.Images.RemoveAt(0);
@@ -295,10 +294,7 @@ namespace WindowsApp
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            Coeff = trackBar1.Value * 2;
-            colorPlots = new char[width * height];
-            for (int i = 0; i < colorPlots.Length; i++)
-                colorPlots[i] = (char) Math.Min(255, (int) (A[i] / maxA * Coeff * 256));
+            Coeff = trackBar1.Value;
             DrawPicture();
         }
 
@@ -307,14 +303,14 @@ namespace WindowsApp
             signal.PalleteMode = 0;
             DrawPicture();
         }
-
-        private void blue_button_Click(object sender, EventArgs e)
+        
+        private void hot_button_Click_1(object sender, EventArgs e)
         {
             signal.PalleteMode = 1;
             DrawPicture();
         }
 
-        private void red_button_Click(object sender, EventArgs e)
+        private void cool_button_Click(object sender, EventArgs e)
         {
             signal.PalleteMode = 2;
             DrawPicture();
@@ -340,12 +336,12 @@ namespace WindowsApp
             gridMode = !gridMode;
             DrawPicture();
         }
+        
 
-
-        private void button5_Click_1(object sender, EventArgs e)
+        private void trackBar2_Scroll(object sender, EventArgs e)
         {
-            signal.PalleteMode = 3;
-            DrawPicture();
+            coeff_n = trackBar2.Value;
+            Update();
         }
     }
 }
