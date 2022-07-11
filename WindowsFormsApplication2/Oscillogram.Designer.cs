@@ -50,12 +50,12 @@
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.удалитьToolStripMenuItem, this.локальныйМасштабToolStripMenuItem, this.глобальныйМасштабToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(215, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(230, 76);
             // 
             // удалитьToolStripMenuItem
             // 
             this.удалитьToolStripMenuItem.Name = "удалитьToolStripMenuItem";
-            this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(214, 24);
+            this.удалитьToolStripMenuItem.Size = new System.Drawing.Size(229, 24);
             this.удалитьToolStripMenuItem.Text = "Удалить";
             this.удалитьToolStripMenuItem.Click += new System.EventHandler(this.удалитьToolStripMenuItem_Click);
             // 
@@ -64,14 +64,14 @@
             this.локальныйМасштабToolStripMenuItem.Checked = true;
             this.локальныйМасштабToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.локальныйМасштабToolStripMenuItem.Name = "локальныйМасштабToolStripMenuItem";
-            this.локальныйМасштабToolStripMenuItem.Size = new System.Drawing.Size(214, 24);
+            this.локальныйМасштабToolStripMenuItem.Size = new System.Drawing.Size(229, 24);
             this.локальныйМасштабToolStripMenuItem.Text = "Локальный масштаб";
             this.локальныйМасштабToolStripMenuItem.Click += new System.EventHandler(this.локальныйМасштабToolStripMenuItem_Click);
             // 
             // глобальныйМасштабToolStripMenuItem
             // 
             this.глобальныйМасштабToolStripMenuItem.Name = "глобальныйМасштабToolStripMenuItem";
-            this.глобальныйМасштабToolStripMenuItem.Size = new System.Drawing.Size(214, 24);
+            this.глобальныйМасштабToolStripMenuItem.Size = new System.Drawing.Size(229, 24);
             this.глобальныйМасштабToolStripMenuItem.Text = "Глобальный масштаб";
             this.глобальныйМасштабToolStripMenuItem.Click += new System.EventHandler(this.глобальныйМасштабToolStripMenuItem_Click);
             // 
@@ -81,7 +81,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.toolStripButton1, this.toolStripButton2, this.toolStripSeparator1, this.toolStripButton3, this.toolStripButton4, this.toolStripButton5});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(684, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(912, 27);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -149,13 +149,13 @@
             // 
             // oscillogram
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(684, 201);
+            this.ClientSize = new System.Drawing.Size(912, 247);
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.toolStrip1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "oscillogram";

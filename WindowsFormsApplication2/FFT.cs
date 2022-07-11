@@ -8,7 +8,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace WindowsApp
 {
     public partial class FFT : Form
-    {
+    {   
         bool localScaleMode = false;
         bool sharpMode = true;
         bool markerMode = false;
@@ -58,6 +58,7 @@ namespace WindowsApp
         public FFT(MainForm ParrentForm)
         {
             InitializeComponent();
+    
         }
 
         private void ChangeFFTMode(int fftMode)
@@ -245,7 +246,7 @@ namespace WindowsApp
             chart.Location = new Point(0, this.H * charts.Count);
             ChartArea area = new ChartArea();
             area.Name = "myGraph";
-            area.AxisX.ScrollBar.Enabled = true;
+            area.AxisX.ScrollBar.Enabled = false;//Todo сделать скроллбар
             area.AxisX.Minimum = 0;
             area.AxisX.Maximum = signal.Frequency;
             area.AxisX.LabelStyle.Format = GetLabelFormat(0, signal.Frequency);
@@ -253,7 +254,6 @@ namespace WindowsApp
             area.CursorX.AutoScroll = true;
             area.CursorX.IsUserSelectionEnabled = true;
             area.AxisX.ScaleView.Zoomable = true;
-            area.AxisX.ScaleView.Zoom(signal.BeginRangeFft, signal.EndRangeFft);
             area.AxisX.ScrollBar.IsPositionedInside = true;
             area.BorderDashStyle = ChartDashStyle.Solid;
             area.BorderColor = Color.Black;
@@ -264,6 +264,7 @@ namespace WindowsApp
             area.AxisX.MajorGrid.LineColor = Color.Gray;
             area.AxisY.IsLogarithmic = isLogY;
             area.AxisY.LabelStyle.Format = "N0";
+            area.AxisX.ScaleView.Zoom(signal.BeginRangeFft, signal.EndRangeFft);
             chart.ChartAreas.Add(area);
 
             Series series = new Series();
@@ -337,14 +338,23 @@ namespace WindowsApp
                 return "N0";
             }
 
-            if (difference < 10 && difference >= 1)
+            if (difference >= 1)
             {
                 return "N1";
             }
 
-            if (difference < 1 && difference > 0.1)
+            if (difference > 0.1)
             {
                 return "N2";
+            }
+            if (difference < 0.001)
+            {
+                return "N5";
+            }
+
+            if (difference < 0.01)
+            {
+                return "N4";
             }
 
             return "N3";
@@ -431,7 +441,7 @@ namespace WindowsApp
         private void viewchanged(object sender, ViewEventArgs e)
         {
             signal.BeginRangeFft = e.ChartArea.AxisX.ScaleView.Position;
-            signal.setEndRangeFFT(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetEndRangeFFT(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
             SetScale();
         }
 

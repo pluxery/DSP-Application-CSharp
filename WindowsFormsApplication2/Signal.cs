@@ -211,7 +211,7 @@ namespace WindowsApp
                 Model.ZoomCharts(BeginRangeOsci, EndRangeOsci);
         }
 
-        public void setEndRangeFFT(double value)
+        public void SetEndRangeFFT(double value)
         {
             if (value <= 0)
             {

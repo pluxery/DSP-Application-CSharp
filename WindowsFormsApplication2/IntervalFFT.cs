@@ -38,7 +38,7 @@ namespace WindowsApp
                 else
                 {
                     signal.BeginRangeFft = startVal;
-                    signal.setEndRangeFFT(endVal);
+                    signal.SetEndRangeFFT(endVal);
                     Close();
                 }
             }
