@@ -105,7 +105,7 @@ namespace WindowsApp
             chart1.ChartAreas["ChartArea1"].AxisX.Minimum = 0;
             chart1.ChartAreas["ChartArea1"].AxisX.Maximum = signal.CountOfSamples;
             chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 0;
-            chart1.ChartAreas["ChartArea1"].AxisY.Maximum = signal.Frequency;
+            chart1.ChartAreas["ChartArea1"].AxisY.Maximum = signal.Frequency / 2;
             chart1.ChartAreas["ChartArea1"].AxisY.LabelStyle.Format = GetLabelFormat(0, signal.Frequency);
             chart1.ChartAreas["ChartArea1"].AxisX.LabelStyle.Format = "N0";
             chart1.ChartAreas["ChartArea1"].BackImageAlignment = ChartImageAlignmentStyle.Center;
@@ -147,7 +147,7 @@ namespace WindowsApp
 
             double Section_Base = (signal.EndRangeOsci - signal.BeginRangeOsci) / Ns;
 
-            
+
             int Section_N = (int) (Section_Base * coeff_n);
 
             int NN;
@@ -177,7 +177,7 @@ namespace WindowsApp
             }
 
             var curPointsFragment = GetPointsFragment(points, (int) signal.BeginRangeOsci, (int) signal.EndRangeOsci);
-            
+
             for (int ns = 0; ns < Ns; ns++)
             {
                 int n0 = (int) (ns * Section_Base);
@@ -229,7 +229,7 @@ namespace WindowsApp
                     for (int i = 0; i < K; i++)
                     {
                         amplitude[i] = (1.0 / K) *
-                                 Math.Abs(Math.Sqrt(Math.Pow(fft[i].Real, 2) + Math.Pow(fft[i].Imaginary, 2)));
+                                       Math.Abs(Math.Sqrt(Math.Pow(fft[i].Real, 2) + Math.Pow(fft[i].Imaginary, 2)));
                     }
 
                     for (int i = 0; i < K; i++)
@@ -244,7 +244,7 @@ namespace WindowsApp
                     A[ns + i * Ns] = amplitude[i];
                 }
             }
-            
+
             maxA = A.Max();
         }
 
@@ -262,7 +262,7 @@ namespace WindowsApp
             for (var i = 0; i <= 85; i++) hot[i] = new byte[] {0, 0, (byte) (i * 3)};
             for (var i = 86; i <= 170; i++) hot[i] = new byte[] {0, (byte) ((i - 85) * 3), 255};
             for (var i = 171; i <= 255; i++) hot[i] = new byte[] {(byte) ((i - 170) * 3), 255, 255};
-            
+
 
             Palletes = new List<byte[][]>(3);
             Palletes.Add(grey);
@@ -303,7 +303,7 @@ namespace WindowsApp
             signal.PalleteMode = 0;
             DrawPicture();
         }
-        
+
         private void hot_button_Click_1(object sender, EventArgs e)
         {
             signal.PalleteMode = 1;
@@ -336,7 +336,7 @@ namespace WindowsApp
             gridMode = !gridMode;
             DrawPicture();
         }
-        
+
 
         private void trackBar2_Scroll(object sender, EventArgs e)
         {

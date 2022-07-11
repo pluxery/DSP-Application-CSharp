@@ -31,7 +31,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.grid = new System.Windows.Forms.ToolStripButton();
             this.marks = new System.Windows.Forms.ToolStripButton();
-            this.logYBtn = new System.Windows.Forms.ToolStripButton();
+            this.logBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.interv = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -47,7 +47,7 @@
             // toolStrip1
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.grid, this.marks, this.logYBtn, this.toolStripSeparator1, this.interv, this.toolStripButton2, this.toolStripButton3, this.smoothBtn, this.X0_btn});
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.grid, this.marks, this.logBtn, this.toolStripSeparator1, this.interv, this.toolStripButton2, this.toolStripButton3, this.smoothBtn, this.X0_btn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(601, 27);
@@ -78,12 +78,12 @@
             // 
             // logYBtn
             // 
-            this.logYBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.logYBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.logYBtn.Name = "logYBtn";
-            this.logYBtn.Size = new System.Drawing.Size(37, 24);
-            this.logYBtn.Text = "LgY";
-            this.logYBtn.Click += new System.EventHandler(this.lgy_Click);
+            this.logBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.logBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.logBtn.Name = "logBtn";
+            this.logBtn.Size = new System.Drawing.Size(37, 24);
+            this.logBtn.Text = "LgY";
+            this.logBtn.Click += new System.EventHandler(this.log_Click);
             // 
             // toolStripSeparator1
             // 
@@ -194,7 +194,7 @@
         private System.Windows.Forms.ToolStripMenuItem удалитьToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem локальныйМасштабToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem глобальныйМасштабToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton logYBtn;
+        private System.Windows.Forms.ToolStripButton logBtn;
         private System.Windows.Forms.ToolStripButton marks;
     }
 }

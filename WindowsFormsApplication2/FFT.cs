@@ -26,7 +26,7 @@ namespace WindowsApp
         private int X2;
         private int Y2;
 
-        private bool isLogY = false;
+        private bool isLogMode = false;
         private bool isSmooth = false;
 
         double[] Re;
@@ -262,7 +262,8 @@ namespace WindowsApp
             area.AxisY.MajorGrid.Enabled = sharpMode;
             area.AxisY.MajorGrid.LineColor = Color.Gray;
             area.AxisX.MajorGrid.LineColor = Color.Gray;
-            area.AxisY.IsLogarithmic = isLogY;
+            area.AxisY.IsLogarithmic = isLogMode;
+            area.AxisX.IsLogarithmic = isLogMode;
             area.AxisY.LabelStyle.Format = "N0";
             area.AxisX.ScaleView.Zoom(signal.BeginRangeFft, signal.EndRangeFft);
             chart.ChartAreas.Add(area);
@@ -555,7 +556,7 @@ namespace WindowsApp
             interval_fft.Show();
         }
 
-        private void lgy_Click(object sender, EventArgs e)
+        private void log_Click(object sender, EventArgs e)
         {
             if (signal.FFTMode != 1)
             {
@@ -568,17 +569,18 @@ namespace WindowsApp
                 SetScale();
                 if (charts.Count > 0)
                 {
-                    isLogY = !isLogY;
+                    isLogMode = !isLogMode;
 
-                    if (isLogY) глобальныйМасштабToolStripMenuItem.Enabled = false;
+                    if (isLogMode) глобальныйМасштабToolStripMenuItem.Enabled = false;
                     else глобальныйМасштабToolStripMenuItem.Enabled = true;
 
-                    logYBtn.Checked = isLogY;
+                    logBtn.Checked = isLogMode;
                     for (int i = 0; i < charts.Count; i++)
                     {
                         for (int j = 0; j < 2; j++)
                         {
-                            charts[i][j].ChartAreas["myGraph"].AxisY.IsLogarithmic = isLogY;
+                            //charts[i][j].ChartAreas["myGraph"].AxisX.IsLogarithmic = isLogMode;
+                            charts[i][j].ChartAreas["myGraph"].AxisY.IsLogarithmic = isLogMode;
                         }
                     }
                 }
