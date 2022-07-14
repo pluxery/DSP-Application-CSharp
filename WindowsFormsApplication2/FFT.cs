@@ -9,6 +9,8 @@ namespace WindowsApp
 {
     public partial class FFT : Form
     {   
+        //Todo Sync with Oscillogram
+        //todo add new Log Mode
         bool localScaleMode = false;
         bool sharpMode = true;
         bool markerMode = false;

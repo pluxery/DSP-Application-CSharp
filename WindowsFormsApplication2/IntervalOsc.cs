@@ -55,8 +55,8 @@ namespace WindowsApp
         //а тут данные отправляются в диспетчер
         private void button1_Click(object sender, EventArgs e)
         {
-            signal.SetBeginRangeOsci(Convert.ToDouble(Start.Text));
-            signal.SetEndRangeOsci(Convert.ToDouble(Finish.Text));
+            signal.SetBeginRangeOsci(Convert.ToInt32(Start.Text));
+            signal.SetEndRangeOsci(Convert.ToInt32(Finish.Text));
             if (signal.Spectrogram != null)
             {
                 signal.Spectrogram.Update();

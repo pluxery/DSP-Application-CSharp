@@ -337,14 +337,14 @@ namespace WindowsApp
 
         private void scroller(object sender, ScrollBarEventArgs e)
         {
-            signal.SetBeginRangeOsci(e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void viewchanged(object sender, ViewEventArgs e)
         {
-            signal.SetBeginRangeOsci(e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -379,7 +379,7 @@ namespace WindowsApp
 
         private void добавитьВНавигациюToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(signal.ChechHash("model_" + signal.GetHash("model_k"))))
+            if (!(signal.CheckHash("model_" + signal.GetHash("model_k"))))
             {
                 signal.SetHash("model_" + signal.GetHash("model_k"), 1);
                 signal.AddChannel(data, "Model_" + signal.GetHash("model_k") + "_" + "1");

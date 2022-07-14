@@ -32,6 +32,7 @@ namespace WindowsApp
         private byte[][] hot;
 
         private int curChannelIndex;
+        private List<string> timeList = new List<string>();
 
 
         public Spectrogram(MainForm parrentForm)
@@ -43,6 +44,12 @@ namespace WindowsApp
             trackBar2.Maximum = 8;
             trackBar2.Minimum = 0;
             trackBar2.Value = 3;
+
+            for (int i = 0; i < signal.CountOfSamples; i++)
+            {
+                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                timeList.Add(time.Hours + ":" + time.Minutes + ":" + time.Seconds);
+            }
         }
 
         private void resize(object sender, EventArgs e)
@@ -61,7 +68,15 @@ namespace WindowsApp
             ComputeSpectrogramArray();
             DrawPicture();
             CreateChart(channelIndex);
-            chart1.Series[0].Points.AddXY(1, 1);
+            var samples = new double[signal.CountOfSamples];//просто надо чем то заполнить график для DataBindXY
+            for (int i = 0; i < signal.CountOfSamples; i++)
+            {
+                samples[i] = i + 1;
+                chart1.Series[0].Points.AddXY(i, 1);
+            }
+
+            chart1.Series[0].Points.DataBindXY(timeList, samples);
+
             chart1.Show();
 
             trackBar1.Scroll += trackBar1_Scroll;

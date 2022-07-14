@@ -235,12 +235,12 @@ namespace WindowsApp
             statItems[channelIndex].CheckState = CheckState.Checked;
         }
 
-        public void UnCheckItemSt(int channelIndex)
+        public void UnCheckItemStatistic(int channelIndex)
         {
             statItems[channelIndex].CheckState = CheckState.Unchecked;
         }
 
-        public void UnCheckItemSt()
+        public void UnCheckItemStatistic()
         {
             foreach (ToolStripMenuItem item in statItems)
                 item.CheckState = CheckState.Unchecked;
@@ -324,6 +324,22 @@ namespace WindowsApp
         private void StatMenuItemClickHandler(object sender, EventArgs e)
         {
             ToolStripMenuItem clickedItem = (ToolStripMenuItem) sender;
+            if (clickedItem.CheckState.Equals(CheckState.Checked))
+            {
+                if (signal.Statistic.charts.Count() > 1)
+                    for (int j = 0; j < signal.Oscillogram.charts.Count(); j++)
+                    {
+                        if (signal.Oscillogram.charts[j].Series[0].LegendText == clickedItem.Text)
+                            signal.Oscillogram.remove(j);
+                    }
+                else
+                    signal.Oscillogram.remove(0);
+            }
+            else
+                signal.CreateStatAsField((int) clickedItem.Tag);
+            return;
+            //TODO
+            //ToolStripMenuItem clickedItem = (ToolStripMenuItem) sender;
 
             Statistic st = (Statistic) signal.GetHash("stat");
             if (clickedItem.CheckState.Equals(CheckState.Checked))
@@ -333,13 +349,18 @@ namespace WindowsApp
                         for (int j = 0; j < st.charts.Count(); j++)
                         {
                             if (st.charts[j].Series[0].LegendText == clickedItem.Text)
-                                st.remove(j);
+                                st.RemoveChart(j);
                         }
                     else
-                        st.remove(0);
+                        st.RemoveChart(0);
             }
             else
+            {
+                // signal.Statistic = new Statistic(this);
+                // signal.Statistic.Init(0);
+                // signal.Statistic.Show();
                 signal.CreateStatistic((int) clickedItem.Tag);
+            }
         }
 
         private void ДПТItemClickHandler(object sender, EventArgs e)
@@ -428,7 +449,7 @@ namespace WindowsApp
         {
             delete_models();
             signal.Textmod = sender.ToString();
-            if (signal.ChechHash("super"))
+            if (signal.CheckHash("super"))
             {
                 sup = (Super) signal.GetHash("super");
                 sup.Close();
@@ -450,7 +471,7 @@ namespace WindowsApp
 
         private void delete_models()
         {
-            if (signal.ChechHash("super"))
+            if (signal.CheckHash("super"))
             {
                 sup = (Super) signal.GetHash("super");
                 if (sup !=null)

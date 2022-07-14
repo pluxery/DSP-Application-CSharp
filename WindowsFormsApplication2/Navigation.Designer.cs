@@ -35,15 +35,16 @@
             this.корреляционныйАнализToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.спектральныйАнализToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.спектограммаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.статистикаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.осцилограммаToolStripMenuItem, this.dPFToolStripMenuItem, this.корреляционныйАнализToolStripMenuItem, this.спектральныйАнализToolStripMenuItem, this.спектограммаToolStripMenuItem});
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.осцилограммаToolStripMenuItem, this.dPFToolStripMenuItem, this.корреляционныйАнализToolStripMenuItem, this.спектральныйАнализToolStripMenuItem, this.спектограммаToolStripMenuItem, this.статистикаToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(257, 146);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(257, 170);
             // 
             // осцилограммаToolStripMenuItem
             // 
@@ -82,6 +83,13 @@
             this.спектограммаToolStripMenuItem.Text = "Спектограмма";
             this.спектограммаToolStripMenuItem.Click += new System.EventHandler(this.спектограммаToolStripMenuItem_Click);
             // 
+            // статистикаToolStripMenuItem
+            // 
+            this.статистикаToolStripMenuItem.Name = "статистикаToolStripMenuItem";
+            this.статистикаToolStripMenuItem.Size = new System.Drawing.Size(256, 24);
+            this.статистикаToolStripMenuItem.Text = "Статистика";
+            this.статистикаToolStripMenuItem.Click += new System.EventHandler(this.статистикаToolStripMenuItem_Click);
+            // 
             // Navigation
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -91,7 +99,7 @@
             this.ClientSize = new System.Drawing.Size(835, 441);
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Navigation";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Каналы";
@@ -100,6 +108,8 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.ToolStripMenuItem статистикаToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripMenuItem спектограммаToolStripMenuItem;
 

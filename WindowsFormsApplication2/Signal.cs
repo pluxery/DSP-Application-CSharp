@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 
@@ -26,9 +27,11 @@ namespace WindowsApp
         public DateTime DateBegin { get; set; }
         public DateTime DateStartOfSignal { get; private set; }
         public PointF[,] Points { get; set; }
-        public oscillogram Oscillogram { get; private set; }
-        public double BeginRangeOsci { get; private set; }
-        public double EndRangeOsci { get; private set; } = instance != null ? GetInstance().CountOfSamples : 0;
+        public Oscillogram Oscillogram { get; private set; }
+        public Statistic Statistic { get; set; }
+        public List<Statistic> StatisticList = new List<Statistic>();
+        public int BeginRangeOsci { get; private set; }
+        public int EndRangeOsci { get; private set; } = instance != null ? GetInstance().CountOfSamples : 0;
         public double BeginRangeFft { get; set; }
         public double EndRangeFft { get; set; }
         public Navigation Navigation { get; private set; }
@@ -81,7 +84,7 @@ namespace WindowsApp
             MainForm.SignalInformation(nav == null ? false : true);
         }
 
-        public void SetOscillogram(oscillogram osc)
+        public void SetOscillogram(Oscillogram osc)
         {
             if (osc == null)
                 MainForm.osc(false);
@@ -175,7 +178,7 @@ namespace WindowsApp
             return max;
         }
 
-        public void SetBeginRangeOsci(double st)
+        public void SetBeginRangeOsci(int st)
         {
             BeginRangeOsci = st;
             if (Navigation != null)
@@ -188,7 +191,7 @@ namespace WindowsApp
             nav_was_del = model_st;
         }
 
-        public void SetEndRangeOsci(double value)
+        public void SetEndRangeOsci(int value)
         {
             EndRangeOsci = value;
             if (Navigation != null)
@@ -279,8 +282,8 @@ namespace WindowsApp
         {
             if (Oscillogram == null)
             {
-                SetOscillogram(new oscillogram(MainForm));
-                Oscillogram.MdiParent = MainForm;
+                SetOscillogram(new Oscillogram(MainForm));
+                //Oscillogram.MdiParent = MainForm;
 
                 try
                 {
@@ -308,15 +311,22 @@ namespace WindowsApp
 
         public void SetHash(String objectName, Object obj)
         {
-            if (ChechHash(objectName))
+            if (CheckHash(objectName))
                 hash[objectName] = obj;
             else
                 hash.Add(objectName, obj);
         }
 
-        public bool ChechHash(String objectName)
+        public bool CheckHash(String objectName)
         {
             return hash.ContainsKey(objectName);
+        }
+
+        public void CreateStatAsField(int channelIndex)
+        {
+            Statistic = new Statistic(MainForm);
+            Statistic.Init(channelIndex);
+            Statistic.Show();
         }
 
         public void CreateStatistic(int channelIndex)
@@ -325,7 +335,7 @@ namespace WindowsApp
             if (statistic == null)
             {
                 statistic = new Statistic(MainForm);
-                statistic.MdiParent = MainForm;
+                //statistic.MdiParent = MainForm;
                 try
                 {
                     statistic.Owner = MainForm;
@@ -345,7 +355,7 @@ namespace WindowsApp
             if (Fft == null)
             {
                 Fft = new FFT(MainForm);
-                Fft.MdiParent = MainForm;
+                //Fft.MdiParent = MainForm;
 
                 try
                 {
@@ -367,7 +377,7 @@ namespace WindowsApp
             if (Correlation == null)
             {
                 Correlation = new Correlation(MainForm);
-                Correlation.MdiParent = MainForm;
+                //Correlation.MdiParent = MainForm;
 
                 try
                 {

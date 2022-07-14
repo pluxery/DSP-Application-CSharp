@@ -182,14 +182,14 @@ namespace WindowsApp
         private void scroller(object sender, ScrollBarEventArgs e)
         {
             double round = signal.EndRangeOsci - signal.BeginRangeOsci;
-            signal.SetBeginRangeOsci(e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void viewchanged(object sender, ViewEventArgs e)
         {
-            signal.SetBeginRangeOsci(e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)

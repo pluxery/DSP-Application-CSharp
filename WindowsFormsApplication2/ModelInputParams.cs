@@ -92,9 +92,9 @@ namespace WindowsApp
                     texts.RemoveAt(0);
                 }
 
-                if (!signal.ChechHash("modell_t") && textmod.Trim() == "Случайный сигнал АРСС (p,q)")
+                if (!signal.CheckHash("modell_t") && textmod.Trim() == "Случайный сигнал АРСС (p,q)")
                 {
-                    if (signal.ChechHash("modell"))
+                    if (signal.CheckHash("modell"))
                     {
                         modellng = (ModelInputParams) signal.GetHash("modell");
                         modellng.Close();
@@ -258,7 +258,7 @@ namespace WindowsApp
                     break;
                 case "Случайный сигнал АРСС (p,q)":
                     modelNum = 13;
-                    if (signal.ChechHash("modell_t"))
+                    if (signal.CheckHash("modell_t"))
                     {
                         List<TextBox> texts = (List<TextBox>) signal.GetHash("modell_t");
                         for (int i = 1; i <= Convert.ToInt32(texts[0].Text); i++)

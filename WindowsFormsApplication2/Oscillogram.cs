@@ -6,15 +6,19 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WindowsApp
 {
-    public partial class oscillogram : Form
+    public partial class Oscillogram : Form
     {
         //TODO align charts
-        //TODO Axis X samples to seconds
+        //TODO save AxisLabelMode state for new chart
+        //TODO Set Default AxisLabelMode = Time
         bool localScaleMode = true;
-        bool GridMode = true; 
+        bool gridMode = true; 
         bool markerMode = true;
         Signal signal = Signal.GetInstance();
-        public List<Chart> charts = new List<Chart>(); 
+        private Dictionary<string, double[]> yValuesByChannel = new Dictionary<string, double[]>();
+        private List<string> samples = new List<string>();
+        public List<Chart> charts = new List<Chart>();
+        private List<string> timeList = new List<string>();
         Chart chart; 
         public List<int> channelsList = new List<int>();
         private int X1;
@@ -26,7 +30,7 @@ namespace WindowsApp
         int W = 900;
         int H = 200;
         private int curChannelIndex;
-
+        private bool AxisXLabelMode;//false - samples; true - time
         private void resize(object sender, EventArgs e)
         {
             if (charts.Count > 0)
@@ -41,24 +45,34 @@ namespace WindowsApp
             }
         }
 
-        public oscillogram(MainForm ParrentForm)
+        public Oscillogram(MainForm ParrentForm)
         {
             InitializeComponent();
+            for (int i = 0; i < signal.CountOfSamples; i++)
+            {
+                samples.Add(Convert.ToString(i+1));
+                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                timeList.Add(time.Hours + ":" + time.Minutes + ":" + time.Seconds);
+                
+            }
         }
 
 
-        public void Init(int n, double mini, double maxi)
+        public void Init(int channelIndex, double min, double max)
         {
-            if (!channelsList.Contains(n))
+            if (!channelsList.Contains(channelIndex))
             {
-                curChannelIndex = n;
-                CreateChart(mini, maxi, n);
-                chart.Tag = n.ToString();
+                curChannelIndex = channelIndex;
+                CreateChart(min, max, channelIndex);
+                
                 charts.Add(chart);
+                var yPoints = new double[signal.CountOfSamples];
                 for (int i = 0; i < signal.CountOfSamples; i++)
                 {
-                    chart.Series[0].Points.AddXY(i, signal.Points[n, i].Y);
+                    yPoints[i] = signal.Points[channelIndex, i].Y;
+                    chart.Series[0].Points.AddXY(i, signal.Points[channelIndex, i].Y);
                 }
+                yValuesByChannel[chart.Name] = yPoints;
 
                 chart.ChartAreas["myGraph"].AxisY.LabelStyle.Format = GetLabelFormat(
                     chart.ChartAreas["myGraph"].AxisY.Minimum,
@@ -75,11 +89,13 @@ namespace WindowsApp
             }
         }
 
-        private void CreateChart(double min, double max, int n)
+        private void CreateChart(double min, double max, int channelIndex)
         {
-            channelsList.Add(n);
-            signal.MainForm.CheckItem(n);
+            channelsList.Add(channelIndex);
+            signal.MainForm.CheckItem(channelIndex);
             chart = new Chart();
+            chart.Name = signal.Names[channelIndex];
+            chart.Tag = channelIndex.ToString();
             chart.Parent = this;
             chart.SetBounds(0, prob + H * charts.Count, W, H);
             ChartArea area = new ChartArea();
@@ -98,8 +114,8 @@ namespace WindowsApp
             area.BorderDashStyle = ChartDashStyle.Solid;
             area.BorderColor = Color.Black;
             area.BorderWidth = 1;
-            area.AxisX.MajorGrid.Enabled = GridMode;
-            area.AxisY.MajorGrid.Enabled = GridMode;
+            area.AxisX.MajorGrid.Enabled = gridMode;
+            area.AxisY.MajorGrid.Enabled = gridMode;
 
             chart.ChartAreas.Add(area);
 
@@ -113,10 +129,10 @@ namespace WindowsApp
 
             series1.ChartType = SeriesChartType.Line;
             series1.Color = Color.Black;
-            series1.LegendText = signal.Names[n];
-            chart.Legends.Add(signal.Names[n]);
-            chart.Legends[signal.Names[n]].Docking = Docking.Top;
-            chart.Legends[signal.Names[n]].Alignment = StringAlignment.Center;
+            series1.LegendText = signal.Names[channelIndex];
+            chart.Legends.Add(signal.Names[channelIndex]);
+            chart.Legends[signal.Names[channelIndex]].Docking = Docking.Top;
+            chart.Legends[signal.Names[channelIndex]].Alignment = StringAlignment.Center;
             chart.Series.Add(series1);
             area.AxisX.ScaleView.Zoom(signal.BeginRangeOsci, signal.EndRangeOsci);
         }
@@ -230,11 +246,16 @@ namespace WindowsApp
 
         private void viewchanged(object sender, ViewEventArgs e)
         {
-            signal.SetBeginRangeOsci(e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
             if (signal.Spectrogram != null)
             {
                 signal.Spectrogram.Update();
+            }
+            if (signal.Statistic != null)
+            {
+                foreach (var st in signal.StatisticList)
+                    st.Update();
             }
         }
 
@@ -296,12 +317,12 @@ namespace WindowsApp
         {
             if (charts.Count > 0)
             {
-                GridMode = !GridMode;
-                toolStripButton1.Checked = GridMode;
+                gridMode = !gridMode;
+                toolStripButton1.Checked = gridMode;
                 for (int i = 0; i < charts.Count; i++)
                 {
-                    charts[i].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = GridMode;
-                    charts[i].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = GridMode;
+                    charts[i].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = gridMode;
+                    charts[i].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = gridMode;
                 }
             }
         }
@@ -327,6 +348,27 @@ namespace WindowsApp
             interval = new IntervalOsc();
             interval.Hide();
             interval.Show();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            AxisXLabelMode = !AxisXLabelMode;
+            if (AxisXLabelMode)
+            {
+                button1.Text = "Время";
+                foreach (var chart in charts)
+                {
+                    chart.Series[0].Points.DataBindXY(timeList, yValuesByChannel[chart.Name]);
+                }
+            }
+            else
+            {
+                button1.Text = "Отсчеты";
+                foreach (var chart in charts)
+                {
+                    chart.Series[0].Points.DataBindXY(samples, yValuesByChannel[chart.Name]);
+                }
+            }
         }
     }
 }

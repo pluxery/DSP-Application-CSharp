@@ -34,9 +34,9 @@ namespace WindowsApp
                 signal.SetHash("super_ch", checkedListBox1);
                 try
                 {
-                    signal.SetBeginRangeOsci(Convert.ToDouble(start.Text));
-                    signal.SetEndRangeOsci(Convert.ToDouble(finish.Text));
-                    if (signal.ChechHash("super_m"))
+                    signal.SetBeginRangeOsci(Convert.ToInt32(start.Text));
+                    signal.SetEndRangeOsci(Convert.ToInt32(finish.Text));
+                    if (signal.CheckHash("super_m"))
                     {
                         modellng = (ModelInputParams) signal.GetHash("super_m");
                         modellng.Close();
