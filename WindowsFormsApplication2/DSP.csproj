@@ -127,11 +127,11 @@
       <DependentUpon>ModelImage.cs</DependentUpon>
     </Compile>
     <Compile Include="Signal.cs" />
-    <Compile Include="FFT.cs">
+    <Compile Include="Fft.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FFT.Designer.cs">
-      <DependentUpon>FFT.cs</DependentUpon>
+    <Compile Include="Fft.Designer.cs">
+      <DependentUpon>Fft.cs</DependentUpon>
     </Compile>
     <Compile Include="Spectrogram.cs">
       <SubType>Form</SubType>
@@ -219,8 +219,8 @@
     <EmbeddedResource Include="ModelImage.resx">
       <DependentUpon>ModelImage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FFT.resx">
-      <DependentUpon>FFT.cs</DependentUpon>
+    <EmbeddedResource Include="Fft.resx">
+      <DependentUpon>Fft.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="IntervalOsc.resx">
       <DependentUpon>IntervalOsc.cs</DependentUpon>

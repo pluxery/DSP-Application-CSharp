@@ -8,9 +8,6 @@ namespace WindowsApp
 {
     public partial class Oscillogram : Form
     {
-        //TODO align charts
-        //TODO save AxisLabelMode state for new chart
-        //TODO Set Default AxisLabelMode = Time
         bool localScaleMode = true;
         bool gridMode = true; 
         bool markerMode = true;
@@ -189,16 +186,23 @@ namespace WindowsApp
             return "N3";
         }
 
-        public void ZoomCharts(double x1, double x2) 
+        public void Zoom(double x1, double x2) 
         {
             foreach (Chart ch in charts)
             {
                 ch.ChartAreas["myGraph"].AxisX.ScaleView.Zoom(x1, x2);
             }
+            
 
             if (signal.Spectrogram != null)
             {
-                signal.Spectrogram.ZoomX(x1, x2);
+                signal.Spectrogram.Zoom(x1, x2);
+            }
+
+            if (signal.Fft != null)
+            {
+                if (x2 < signal.CountOfSamples/2)
+                    signal.Fft.Zoom(x1,x2);
             }
 
             SetScale();
@@ -275,8 +279,9 @@ namespace WindowsApp
 
             if (signal.Fft != null)
             {
-                signal.Fft.Update();
+                signal.Fft.Redraw();
             }
+
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)

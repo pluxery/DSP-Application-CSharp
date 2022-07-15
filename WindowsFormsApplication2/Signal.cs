@@ -32,8 +32,8 @@ namespace WindowsApp
         public List<Statistic> StatisticList = new List<Statistic>();
         public int BeginRangeOsci { get; private set; }
         public int EndRangeOsci { get; private set; } = instance != null ? GetInstance().CountOfSamples : 0;
-        public double BeginRangeFft { get; set; }
-        public double EndRangeFft { get; set; }
+        public int BeginRangeFft { get; set; }
+        public int EndRangeFft { get; set; }
         public Navigation Navigation { get; private set; }
         public Spectrogram Spectrogram { get; set; }
         public ModelInputParams ModelInputParams { get; private set; }
@@ -42,7 +42,7 @@ namespace WindowsApp
 
         public String Textmod { get; set; }
         Hashtable hash = new Hashtable();
-        public FFT Fft { get; set; }
+        public Fft Fft { get; set; }
 
 
         public Correlation Correlation { get; set; }
@@ -55,29 +55,7 @@ namespace WindowsApp
             instance = new Signal();
             return instance;
         }
-
-        public double[] GetPointsByName(string name)
-        {
-            int idx = 0;
-            var y = new List<double>();
-            foreach (var nm in Names)
-            {
-                if (name == nm)
-                {
-                    for (int i = 0; i < CountOfSamples; i++)
-                    {
-                        y.Add(Points[idx,i].Y);
-                    }
-
-                    return y.ToArray();
-
-                };
-                idx++;
-            }
-
-            throw new Exception("No Found");
-        }
-
+        
         public void SetSignalInfo()
         {
             if (Navigation != null)
@@ -231,16 +209,16 @@ namespace WindowsApp
             }
 
             if (Oscillogram != null)
-                Oscillogram.ZoomCharts(BeginRangeOsci, EndRangeOsci);
+                Oscillogram.Zoom(BeginRangeOsci, EndRangeOsci);
             if (Model != null)
                 Model.ZoomCharts(BeginRangeOsci, EndRangeOsci);
         }
 
-        public void SetEndRangeFFT(double value)
+        public void SetEndRangeFFT(int value)
         {
             if (value <= 0)
             {
-                EndRangeFft = Frequency;
+                EndRangeFft = CountOfSamples/2;
             }
             else
             {
@@ -255,7 +233,7 @@ namespace WindowsApp
 
 
             if (Fft != null)
-                Fft.ZoomCharts(Convert.ToDouble(BeginRangeFft), Convert.ToDouble(EndRangeFft));
+                Fft.Zoom(Convert.ToDouble(BeginRangeFft), Convert.ToDouble(EndRangeFft));
         }
 
 
@@ -376,7 +354,7 @@ namespace WindowsApp
         {
             if (Fft == null)
             {
-                Fft = new FFT(MainForm);
+                Fft = new Fft(MainForm);
                 //Fft.MdiParent = MainForm;
 
                 try

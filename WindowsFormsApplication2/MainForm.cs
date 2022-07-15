@@ -369,14 +369,14 @@ namespace WindowsApp
 
             if (clickedItem.CheckState.Equals(CheckState.Checked))
             {
-                if (signal.Fft.charts.Count() > 1)
-                    for (int i = 0; i < signal.Fft.charts.Count(); i++)
+                if (signal.Fft.fftCharts.Count() > 1)
+                    for (int i = 0; i < signal.Fft.fftCharts.Count(); i++)
                     {
-                        if (signal.Fft.charts[i][0].Series[0].LegendText == clickedItem.Text)
-                            signal.Fft.remove(i);
+                        if (signal.Fft.fftCharts[i][0].Series[0].LegendText == clickedItem.Text)
+                            signal.Fft.Remove(i);
                     }
                 else
-                    signal.Fft.remove(0);
+                    signal.Fft.Remove(0);
             }
             else
                 signal.CreateFFT((int) clickedItem.Tag);

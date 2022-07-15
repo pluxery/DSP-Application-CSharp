@@ -106,7 +106,7 @@ namespace WindowsApp
             DrawPicture();
         }
 
-        public void ZoomX(double x0, double x1)
+        public void Zoom(double x0, double x1)
         {
             chart1.ChartAreas["ChartArea1"].AxisX.ScaleView.Zoom(x0, x1);
         }
@@ -153,7 +153,7 @@ namespace WindowsApp
 
             if (signal.Oscillogram != null)
             {
-                ZoomX(signal.BeginRangeOsci, signal.EndRangeOsci);
+                Zoom(signal.BeginRangeOsci, signal.EndRangeOsci);
             }
         }
 
