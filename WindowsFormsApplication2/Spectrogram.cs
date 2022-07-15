@@ -45,10 +45,28 @@ namespace WindowsApp
             trackBar2.Minimum = 0;
             trackBar2.Value = 3;
 
-            for (int i = 0; i < signal.CountOfSamples; i++)
+            var seconds = signal.CountOfSamples / signal.Frequency;
+            SetAxisXLabel(seconds);
+        }
+
+        private void SetAxisXLabel(double seconds)
+        {
+            if (seconds >= 86400 * 2)
             {
-                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
-                timeList.Add(time.Hours + ":" + time.Minutes + ":" + time.Seconds);
+                for (int i = 0; i < signal.CountOfSamples; i++)
+                {
+                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                    timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+                }
+                
+            }
+            else if (seconds < 86400 * 2)
+            {
+                for (int i = 0; i < signal.CountOfSamples; i++)
+                {
+                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                    timeList.Add(time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+                }
             }
         }
 
@@ -68,7 +86,7 @@ namespace WindowsApp
             ComputeSpectrogramArray();
             DrawPicture();
             CreateChart(channelIndex);
-            var samples = new double[signal.CountOfSamples];//просто надо чем то заполнить график для DataBindXY
+            var samples = new double[signal.CountOfSamples]; //просто надо чем то заполнить график для DataBindXY
             for (int i = 0; i < signal.CountOfSamples; i++)
             {
                 samples[i] = i + 1;

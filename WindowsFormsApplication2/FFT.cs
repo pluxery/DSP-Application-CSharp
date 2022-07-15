@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using MathNet.Numerics.IntegralTransforms;
 
 
 namespace WindowsApp
 {
     public partial class FFT : Form
-    {   
+    {
         //Todo Sync with Oscillogram
-        //todo add new Log Mode
+        //todo add new Log Mode/lmefgpi v34op hgweb5j by;w 5ypej
         bool localScaleMode = false;
         bool sharpMode = true;
         bool markerMode = false;
 
+        private List<int> channelIdxList = new List<int>();
+
         Signal signal = Signal.GetInstance();
-        private int N_part = Signal.GetInstance().CountOfSamples / 2;
+        private int N_part =Signal.GetInstance().CountOfSamples/2;
 
 
         public List<Chart[]> charts = new List<Chart[]>();
@@ -60,7 +64,37 @@ namespace WindowsApp
         public FFT(MainForm ParrentForm)
         {
             InitializeComponent();
-    
+        }
+
+        public void Update()
+        {
+            return;
+            ;
+
+            var fd = signal.Frequency;
+            int j = 0;
+            foreach (var chart in charts)
+            {
+                chart[0].Series[0].Points.Clear();
+                chart[1].Series[0].Points.Clear();
+            }
+
+            foreach (var chart in charts)
+            {
+                for (int i = 0; i < N_part; i++)
+                {
+                    if (signal.FFTMode == 2 && i == 0)
+                    {
+                        chart[0].Series[0].Points.AddXY(i * (fd / N_part),
+                            Math.Abs(Math.Sqrt(Re_x0 * Re_x0 + Im_x0 * Im_x0)));
+                    }
+
+                    if (signal.FFTMode == 2 && i == 0)
+                        chart[1].Series[0].Points.AddXY(i * (fd / N_part), Math.Abs(Re_x0 * Re_x0 + Im_x0 * Im_x0));
+                    else
+                        chart[1].Series[0].Points.AddXY(i * (fd / N_part), Math.Abs(Re[i] * Re[i] + Im[i] * Im[i]));
+                }
+            }
         }
 
         private void ChangeFFTMode(int fftMode)
@@ -84,23 +118,38 @@ namespace WindowsApp
 
         public void ComputeFFT(int channelIndex)
         {
-            Re = new double[signal.CountOfSamples];
-            Im = new double[signal.CountOfSamples];
-            for (int i = 0; i < signal.CountOfSamples; i++)
+            Re = new double[N_part*2];
+            Im = new double[N_part*2];
+            for (int i = 0; i < N_part*2; i++)
             {
-                Re[i] = signal.Points[channelIndex, i].Y;
+                Re[i] = signal.Points[channelIndex,i].Y;
                 Im[i] = 0.0F;
             }
 
             Re_x0 = Re[0];
             Im_x0 = Im[0];
 
-            FastFurierTransform fft = new FastFurierTransform();
-            fft.init((uint) Math.Log(signal.CountOfSamples, 2));
-            fft.run(Re, Im);
+            var fourier = new Complex[N_part*2];
+            for (int i = 0; i < N_part*2; i++)
+            {
+                fourier[i] = new Complex(Re[i], 0);
+            }
+
+            Fourier.Forward(fourier, FourierOptions.NoScaling);
+            for (int i = 0; i < N_part*2; i++)
+            {
+                Re[i] = fourier[i].Real;
+                Im[i] = fourier[i].Imaginary;
+            }
+            
+
+            // FastFurierTransform fft = new FastFurierTransform();
+            // fft.init((uint) Math.Log(N_part, 2));
+            // fft.run(Re, Im);
 
             ChangeFFTMode(signal.FFTMode);
         }
+        
 
 
         private void ContextStrip()
@@ -156,6 +205,7 @@ namespace WindowsApp
                 ContextStrip();
             if (!channelsList.Contains(channelIndex))
             {
+                channelIdxList.Add(channelIndex);
                 Chart[] ch = new Chart[4];
                 ComputeFFT(channelIndex);
 
@@ -243,14 +293,16 @@ namespace WindowsApp
                 channelsList.Add(n);
             signal.MainForm.CheckItemFFT(n);
             chart = new Chart();
+            chart.Name = signal.Names[n];
             chart.Parent = this;
             chart.Size = new Size(W, H);
             chart.Location = new Point(0, this.H * charts.Count);
             ChartArea area = new ChartArea();
             area.Name = "myGraph";
-            area.AxisX.ScrollBar.Enabled = false;//Todo сделать скроллбар
+            area.AxisX.ScrollBar.Enabled = false; //Todo сделать скроллбар
+            
             area.AxisX.Minimum = 0;
-            area.AxisX.Maximum = signal.Frequency;
+            area.AxisX.Maximum = signal.Frequency/2;
             area.AxisX.LabelStyle.Format = GetLabelFormat(0, signal.Frequency);
             area.CursorX.IsUserEnabled = true;
             area.CursorX.AutoScroll = true;
@@ -267,6 +319,8 @@ namespace WindowsApp
             area.AxisY.IsLogarithmic = isLogMode;
             area.AxisX.IsLogarithmic = isLogMode;
             area.AxisY.LabelStyle.Format = "N0";
+            
+            
             area.AxisX.ScaleView.Zoom(signal.BeginRangeFft, signal.EndRangeFft);
             chart.ChartAreas.Add(area);
 
@@ -280,15 +334,18 @@ namespace WindowsApp
 
             series.ChartType = SeriesChartType.Line;
             series.Color = Color.Black;
+            
 
             chart.Series.Clear();
             chart.Series.Add(series);
             chart.Series[0].ChartArea = "myGraph";
+            
 
             series.LegendText = signal.Names[n];
             chart.Legends.Add(signal.Names[n]);
             chart.Legends[signal.Names[n]].Docking = Docking.Top;
             chart.Legends[signal.Names[n]].Alignment = StringAlignment.Center;
+            chart.ChartAreas["myGraph"].AxisX.ScaleView.Zoom(0, signal.Frequency/2);
 
             chart.MouseDown += position1;
             chart.MouseUp += position2;
@@ -305,7 +362,11 @@ namespace WindowsApp
             {
                 case ChartElementType.DataPoint:
                     var dataPoint = e.HitTestResult.Series.Points[e.HitTestResult.PointIndex];
-                    e.Text = string.Format("X = {0}\nY = {1}", dataPoint.XValue, dataPoint.YValues[0]);
+                    var seconds = 2 / dataPoint.XValue;
+                    TimeSpan time = TimeSpan.FromSeconds(seconds);
+                    var period = time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с";
+                    //var pp=String.Format("{00:00:00}", p);
+                    e.Text = string.Format("Y = {1}\nX = {0}\nP = {2}", dataPoint.XValue, dataPoint.YValues[0], period);
                     break;
             }
         }
@@ -350,14 +411,24 @@ namespace WindowsApp
             {
                 return "N2";
             }
-            if (difference < 0.001)
+            if (difference > 0.01)
+            {
+                return "N4";
+            }
+
+            if (difference > 0.001)
             {
                 return "N5";
             }
 
-            if (difference < 0.01)
+            if (difference > 0.0001)
             {
-                return "N4";
+                return "N6";
+            }
+
+            if (difference > 0.00001)
+            {
+                return "N7";
             }
 
             return "N3";
@@ -445,6 +516,10 @@ namespace WindowsApp
         {
             signal.BeginRangeFft = e.ChartArea.AxisX.ScaleView.Position;
             signal.SetEndRangeFFT(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size);
+            foreach (var chart in charts)
+            {
+                
+            }
             SetScale();
         }
 

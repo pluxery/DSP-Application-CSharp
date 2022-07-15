@@ -10,8 +10,8 @@ namespace WindowsApp
         public IntervalFFT()
         {
             InitializeComponent();
-            textBoxStart.Text = Convert.ToString(Math.Round(signal.BeginRangeFft, 4));
-            textBoxFinish.Text = Convert.ToString(Math.Round(signal.EndRangeFft, 4));
+            textBoxStart.Text = Convert.ToString(signal.BeginRangeFft);
+            textBoxFinish.Text = Convert.ToString(signal.EndRangeFft);
         }
 
         private void label1_Click_1(object sender, EventArgs e)
@@ -33,7 +33,7 @@ namespace WindowsApp
                 {
                     MessageBox.Show("Значенние диапозона должно быть > 0");
                     if (startVal < 0) textBoxStart.Text = "0";
-                    if (endVal < 0) textBoxFinish.Text = Convert.ToString(signal.Frequency);
+                    if (endVal < 0) textBoxFinish.Text = Convert.ToString(signal.Frequency/2);
                 }
                 else
                 {
@@ -46,7 +46,7 @@ namespace WindowsApp
             {
                 MessageBox.Show("Введите корректные данные.\n");
                 textBoxStart.Text = "0";
-                textBoxFinish.Text = Convert.ToString(signal.Frequency);
+                textBoxFinish.Text = Convert.ToString(signal.Frequency/2);
             }
         }
 
@@ -58,7 +58,7 @@ namespace WindowsApp
         private void all_btn_Click(object sender, EventArgs e)
         {
             textBoxStart.Text = "0";
-            textBoxFinish.Text = Convert.ToString(signal.Frequency);
+            textBoxFinish.Text = Convert.ToString(signal.Frequency/2);
         }
     }
 }

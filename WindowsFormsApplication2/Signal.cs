@@ -56,6 +56,28 @@ namespace WindowsApp
             return instance;
         }
 
+        public double[] GetPointsByName(string name)
+        {
+            int idx = 0;
+            var y = new List<double>();
+            foreach (var nm in Names)
+            {
+                if (name == nm)
+                {
+                    for (int i = 0; i < CountOfSamples; i++)
+                    {
+                        y.Add(Points[idx,i].Y);
+                    }
+
+                    return y.ToArray();
+
+                };
+                idx++;
+            }
+
+            throw new Exception("No Found");
+        }
+
         public void SetSignalInfo()
         {
             if (Navigation != null)

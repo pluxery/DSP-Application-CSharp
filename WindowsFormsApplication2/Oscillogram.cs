@@ -48,12 +48,27 @@ namespace WindowsApp
         public Oscillogram(MainForm ParrentForm)
         {
             InitializeComponent();
-            for (int i = 0; i < signal.CountOfSamples; i++)
+            var seconds = signal.CountOfSamples / signal.Frequency;
+            SetAxisXLabel(seconds);
+        }
+        private void SetAxisXLabel(double seconds)
+        {
+            if (seconds >= 86400 * 2)
             {
-                samples.Add(Convert.ToString(i+1));
-                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
-                timeList.Add(time.Hours + ":" + time.Minutes + ":" + time.Seconds);
+                for (int i = 0; i < signal.CountOfSamples; i++)
+                {
+                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                    timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+                }
                 
+            }
+            else if (seconds < 86400 * 2)
+            {
+                for (int i = 0; i < signal.CountOfSamples; i++)
+                {
+                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                    timeList.Add(time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+                }
             }
         }
 
@@ -257,6 +272,11 @@ namespace WindowsApp
                 foreach (var st in signal.StatisticList)
                     st.Update();
             }
+
+            if (signal.Fft != null)
+            {
+                signal.Fft.Update();
+            }
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -359,6 +379,7 @@ namespace WindowsApp
                 foreach (var chart in charts)
                 {
                     chart.Series[0].Points.DataBindXY(timeList, yValuesByChannel[chart.Name]);
+                    
                 }
             }
             else
