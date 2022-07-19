@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 
 namespace WindowsApp
@@ -27,9 +28,9 @@ namespace WindowsApp
         public DateTime DateBegin { get; set; }
         public DateTime DateStartOfSignal { get; private set; }
         public PointF[,] Points { get; set; }
-        public Oscillogram Oscillogram { get; private set; }
+        public Oscillogram Oscillogram { get; set; }
         public Statistic Statistic { get; set; }
-        public List<Statistic> StatisticList = new List<Statistic>();
+        public List<Statistic> Statistics = new List<Statistic>();
         public int BeginRangeOsci { get; private set; }
         public int EndRangeOsci { get; private set; } = instance != null ? GetInstance().CountOfSamples : 0;
         public int BeginRangeFft { get; set; }
@@ -64,7 +65,7 @@ namespace WindowsApp
                 SignalInformation = null;
         }
 
-        public void SetModelling(ModelInputParams modelInputParams)
+        public void SetModelInputParams(ModelInputParams modelInputParams)
         {
             ModelInputParams = modelInputParams;
             if (ModelInputParams != null)
@@ -73,9 +74,9 @@ namespace WindowsApp
 
         public void SetModel(Model model)
         {
-            this.Model = model;
-            if (this.Model != null)
-                this.Model.MdiParent = MainForm;
+            Model = model;
+            if (Model != null)
+                Model.MdiParent = MainForm;
         }
 
         public void SetNavigation(Navigation nav)
@@ -145,12 +146,11 @@ namespace WindowsApp
             if (Navigation == null)
             {
                 Navigation = new Navigation(MainForm);
-                Navigation.MdiParent = MainForm;
                 Navigation.Show();
             }
             else
             {
-                Navigation.PlotSignal();
+                Navigation.Init(CountOfChannels);
                 SetNavigation(Navigation);
                 MainForm.CallItem();
             }
@@ -211,7 +211,7 @@ namespace WindowsApp
             if (Oscillogram != null)
                 Oscillogram.Zoom(BeginRangeOsci, EndRangeOsci);
             if (Model != null)
-                Model.ZoomCharts(BeginRangeOsci, EndRangeOsci);
+                Model.Zoom(BeginRangeOsci, EndRangeOsci);
         }
 
         public void SetEndRangeFFT(int value)
@@ -246,59 +246,6 @@ namespace WindowsApp
             MainForm.osc(false);
         }
 
-        public void CreateSpectogram(int channelIndex)
-        {
-            if (Spectrogram == null)
-            {
-                Spectrogram = new Spectrogram(MainForm);
-                Spectrogram.MdiParent = MainForm;
-                try
-                {
-                    Spectrogram.Owner = MainForm;
-                }
-                catch (ArgumentException e)
-                {
-                }
-            }
-            else
-            {
-                Spectrogram.Close();
-                Spectrogram = new Spectrogram(MainForm);
-                Spectrogram.MdiParent = MainForm;
-                try
-                {
-                    Spectrogram.Owner = MainForm;
-                }
-                catch (ArgumentException e)
-                {
-                }
-            }
-
-            Spectrogram.Init(channelIndex);
-            Spectrogram.Show();
-        }
-
-        public void CreateOscillogram(int channelIndex)
-        {
-            if (Oscillogram == null)
-            {
-                SetOscillogram(new Oscillogram(MainForm));
-                //Oscillogram.MdiParent = MainForm;
-
-                try
-                {
-                    Oscillogram.Owner = MainForm;
-                }
-                catch (ArgumentException argEx)
-                {
-                    //MessageBox.Show("Error: Could not do this. Original error: " + argEx.Message);
-                }
-            }
-
-            Oscillogram.Init(channelIndex, Min(channelIndex, 0, CountOfSamples), Max(channelIndex, 0, CountOfSamples));
-            Oscillogram.Show();
-        }
-
         public Object GetHash(String objectName)
         {
             return hash[objectName];
@@ -321,76 +268,33 @@ namespace WindowsApp
         {
             return hash.ContainsKey(objectName);
         }
-
-        public void CreateStatAsField(int channelIndex)
+        
+        public void CreateSpectogram(int channelIndex)
         {
-            Statistic = new Statistic(MainForm);
-            Statistic.Init(channelIndex);
-            Statistic.Show();
-        }
-
-        public void CreateStatistic(int channelIndex)
-        {
-            Statistic statistic = (Statistic) GetHash("stat");
-            if (statistic == null)
+            if (Spectrogram == null)
             {
-                statistic = new Statistic(MainForm);
-                //statistic.MdiParent = MainForm;
-                try
-                {
-                    statistic.Owner = MainForm;
-                }
-                catch (ArgumentException argEx)
-                {
-                }
+                Spectrogram = new Spectrogram(MainForm);
+            }
+            else
+            {
+                Spectrogram.Close();
+                Spectrogram = new Spectrogram(MainForm);
+                Spectrogram.MdiParent = MainForm;
             }
 
-            statistic.Init(channelIndex);
-            statistic.Show();
-            SetHash("stat", statistic);
+            Spectrogram.Init(channelIndex);
+            Spectrogram.Show();
         }
-
-        public void CreateFFT(int channelIndex)
-        {
-            if (Fft == null)
-            {
-                Fft = new Fft(MainForm);
-                //Fft.MdiParent = MainForm;
-
-                try
-                {
-                    Fft.Owner = MainForm;
-                }
-                catch (ArgumentException argEx)
-                {
-                    //MessageBox.Show("Error: Could not do this. Original error: " + argEx.Message);
-                }
-            }
-
-            Fft.Init(channelIndex);
-            Fft.Show();
-        }
-
-
+        
         public void CreateCorrelation(int channelIndex)
         {
             if (Correlation == null)
             {
                 Correlation = new Correlation(MainForm);
-                //Correlation.MdiParent = MainForm;
-
-                try
-                {
-                    Correlation.Owner = MainForm;
-                }
-                catch (ArgumentException argEx)
-                {
-                    //MessageBox.Show("Error: Could not do this. Original error: " + argEx.Message);
-                }
             }
-
             Correlation.Init(channelIndex);
             Correlation.Show();
         }
     }
+    
 }

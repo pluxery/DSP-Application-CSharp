@@ -42,23 +42,23 @@ namespace WindowsApp
         }
 
         //создание и добавление нового чарта на форму
-        public void Init(int n)
+        public void Init(int channelIndex)
         {
-            if (!channelsList.Contains(n))
+            if (!channelsList.Contains(channelIndex))
             {
-                double srx = SRX(n);
-                chart = CreateChart(n);
+                double srx = SRX(channelIndex);
+                chart = CreateChart(channelIndex);
                 order.Add(chart); //добавление чарта в общий список
                 //double k = 1 / 60 / signal.FD();
                 double min = double.MaxValue, max = double.MinValue;
                 for (int i = -signal.CountOfSamples + 1; i < signal.CountOfSamples; i++) //инициализация массива
                 {
                     int l = Math.Abs(i);
-                    double z = ComputeCorrelation(n, l, srx);
+                    double z = ComputeCorrelation(channelIndex, l, srx);
                     min = min > z ? z : min;
                     max = max < z ? z : max;
                     chart.Series[0].Points.AddXY((double) i, z); //то что показывается на графике
-                    chart.Tag = n.ToString();
+                    chart.Tag = channelIndex.ToString();
                 }
 
                 chart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.position1);
@@ -93,11 +93,11 @@ namespace WindowsApp
             return K / signal.CountOfSamples;
         }
 
-        private Chart CreateChart(int n)
+        private Chart CreateChart(int channelIndex)
         {
             Chart chart = new Chart();
-            channelsList.Add(n);
-            signal.MainForm.CheckItemFFT(n);
+            channelsList.Add(channelIndex);
+            signal.MainForm.CheckItemFFT(channelIndex);
             chart.Parent = this;
             chart.Size = new Size(W, H);
             chart.Location = new Point(0, this.H * order.Count);
@@ -132,8 +132,8 @@ namespace WindowsApp
             chart.Series.Clear();
             chart.Series.Add(series);
             chart.Series[0].ChartArea = "myGraph";
-            series.LegendText = signal.Names[n];
-            chart.Legends.Add(signal.Names[n]);
+            series.LegendText = signal.Names[channelIndex];
+            chart.Legends.Add(signal.Names[channelIndex]);
             chart.MouseDown += position1;
             chart.MouseUp += position2;
             chart.AxisScrollBarClicked += scroller;

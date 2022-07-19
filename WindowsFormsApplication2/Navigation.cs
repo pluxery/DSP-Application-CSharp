@@ -8,10 +8,11 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace WindowsApp
 {
     public partial class Navigation : Form
+    
     {
-        Signal signal = Signal.GetInstance();
-        List<Chart> charts = new List<Chart>();
-        Chart chart;
+        protected static Signal signal = Signal.GetInstance();
+        protected Chart curChart;
+        public List<Chart> charts = new List<Chart>();
         bool draw = false;
         private int X1;
         private int Y1;
@@ -30,29 +31,30 @@ namespace WindowsApp
                 signal.Navigation.Close();
             }
 
-            InitializeComponent(); //тут нажимай F12 чтоб увидеть вызов графика
-            PlotSignal();
+            InitializeComponent();
+            Init(signal.CountOfChannels);
             Parrent = ParrentForm;
             signal.SetNavigation(this);
             signal.MainForm.CallItem();
         }
 
         //отрисовка графиков
-        public void PlotSignal()
+
+        public  void Init(int countOfChannels)
         {
             Text = signal.Path.Split('\\')[signal.Path.Split('\\').Length - 1];
-            for (int k = 0; k < signal.CountOfChannels; k++)
+            for (int channel = 0; channel < countOfChannels; channel++)
             {
-                CreateChart(signal.Min(k, 0, signal.CountOfSamples), signal.Max(k, 0, signal.CountOfSamples), k);
-                charts.Add(chart);
+                curChart=CreateChart(channel);
+                charts.Add(curChart);
                 for (int i = 0; i < signal.CountOfSamples; i++)
                 {
-                    chart.Series[0].Points.AddY(signal.Points[k, i].Y);
+                    curChart.Series[0].Points.AddY(signal.Points[channel, i].Y);
                 }
 
-                charts[k].MouseDown += position1;
-                charts[k].MouseMove += position;
-                charts[k].MouseUp += position2;
+                charts[channel].MouseDown += position1;
+                charts[channel].MouseMove += position;
+                charts[channel].MouseUp += position2;
             }
 
             draw = true;
@@ -61,18 +63,18 @@ namespace WindowsApp
             Width = W;
         }
 
-        private void CreateChart(double min, double max, int n)
+        private  Chart CreateChart(int channelIndex)
         {
-            chart = new Chart();
+            var chart = new Chart();
             chart.Parent = this;
-            chart.SetBounds(0, H * n, W - 19, H);
+            chart.SetBounds(0, H * channelIndex, W - 19, H);
             ChartArea area = new ChartArea();
             area.Name = "myGraph";
             area.BorderDashStyle = ChartDashStyle.Solid;
             area.BorderColor = Color.Black;
             area.BorderWidth = 1;
-            area.AxisY.Minimum = min;
-            area.AxisY.Maximum = max;
+            area.AxisY.Minimum = signal.Min(channelIndex, 0, signal.CountOfSamples);
+            area.AxisY.Maximum = signal.Max(channelIndex, 0, signal.CountOfSamples);
             area.AxisX.Minimum = 0;
             area.AxisX.Maximum = signal.CountOfSamples;
             area.AxisX.MajorGrid.Enabled = false;
@@ -85,20 +87,21 @@ namespace WindowsApp
             series1.ChartType = SeriesChartType.Line;
             series1.ChartType = SeriesChartType.Line;
             series1.Color = Color.Black;
-            series1.LegendText = signal.Names[n];
-            chart.Legends.Add(signal.Names[n]);
-            chart.Legends[signal.Names[n]].Docking = Docking.Bottom;
+            series1.LegendText = signal.Names[channelIndex];
+            chart.Legends.Add(signal.Names[channelIndex]);
+            chart.Legends[signal.Names[channelIndex]].Docking = Docking.Bottom;
             chart.Series.Add(series1);
+            return chart;
         }
 
         private void осцилограммаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
-
-            signal.CreateOscillogram(channelIndex);
+            
+            signal.Oscillogram = (Oscillogram)new FactoryOscillogram().Create(channelIndex);
         }
 
         public void DrawRangeLines(int j)
@@ -110,7 +113,7 @@ namespace WindowsApp
                     {
                         if (signal.Oscillogram != null)
                         {
-                            if (signal.Oscillogram.channelsList.Contains(i) || chart == charts[i])
+                            if (signal.Oscillogram.channelIndexes.Contains(i) || curChart == charts[i])
                             {
                                 charts[i].Annotations.Clear();
                                 charts[i].Annotations.Add(VAlines(charts[i], "line1", signal.BeginRangeOsci));
@@ -128,8 +131,8 @@ namespace WindowsApp
 
                     break;
                 case 1: //финишная вертикальная линия
-                    if (chart.Annotations.Count > 1)
-                        chart.Annotations.RemoveAt(chart.Annotations.Count - 1);
+                    if (curChart.Annotations.Count > 1)
+                        curChart.Annotations.RemoveAt(curChart.Annotations.Count - 1);
                     for (int i = 0; i < charts.Count; i++)
                         if (charts[i].Annotations.Count > 0)
                         {
@@ -174,12 +177,12 @@ namespace WindowsApp
             {
                 X1 = e.X;
                 Y1 = e.Y;
-                chart = (Chart) sender;
+                curChart = (Chart) sender;
                 if (e.Button == MouseButtons.Left)
                 {
                     isExistRedLineOnChart = true; //началась отрисовка вертикальных линий 
                     //добавление нач позиции в диспетчер
-                    signal.SetBeginRangeOsci((int) chart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X));
+                    signal.SetBeginRangeOsci((int) curChart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X));
                 }
             }
         }
@@ -195,7 +198,7 @@ namespace WindowsApp
                     isExistRedLineOnChart = false; //закончилась отрисовка верт. линий
                     try
                     {
-                        signal.SetEndRangeOsci((int) chart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X));
+                        signal.SetEndRangeOsci((int) curChart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X));
                     }
                     catch (Exception ex)
                     {
@@ -213,12 +216,12 @@ namespace WindowsApp
                 int Y = e.Y;
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (chart.Annotations.Count > 1)
-                        chart.Annotations.RemoveAt(chart.Annotations.Count - 1);
+                    if (curChart.Annotations.Count > 1)
+                        curChart.Annotations.RemoveAt(curChart.Annotations.Count - 1);
                     try
                     {
-                        chart.Annotations.Add(VAlines(chart, "line",
-                            chart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X)));
+                        curChart.Annotations.Add(VAlines(curChart, "line",
+                            curChart.ChartAreas["myGraph"].AxisX.PixelPositionToValue(e.X)));
                     }
                     catch (Exception ex)
                     {
@@ -246,17 +249,17 @@ namespace WindowsApp
         private void dPFToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
 
-            signal.CreateFFT(channelIndex);
+            signal.Fft = (Fft)new FactoryFft().Create(channelIndex);
         }
 
         private void корреляционныйАнализToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
 
@@ -266,17 +269,16 @@ namespace WindowsApp
         private void спектральныйАнализToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
-
-            signal.CreateFFT(channelIndex);
+            signal.Fft = (Fft)new FactoryFft().Create(channelIndex);
         }
 
         private void спектограммаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
 
@@ -286,10 +288,10 @@ namespace WindowsApp
         private void статистикаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
-            signal.CreateStatAsField(channelIndex);
+            signal.Statistic = (Statistic)new FactoryStatistic().Create(channelIndex);
             
         }
     }

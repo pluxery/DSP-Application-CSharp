@@ -6,29 +6,15 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 
-namespace WindowsApp 
+namespace WindowsApp
 {
-    public partial class Model : Form
+    public partial class Model : AbstractGraphic
     {
-        bool localScaleMode = false;
-        bool GridMode = true;
-        bool markerMode = true;
-
         public PointF[] data;
         Random rand = new Random();
 
         List<TextBox> form; //принимает информацию из текстбоксов при моделировании
-
-        Signal signal = Signal.GetInstance();
-
-        List<Chart> charts = new List<Chart>();
-        Chart chart;
-        List<int> channelsList = new List<int>();
-        private int X1;
-        private int Y1;
-        private int X2;
-        private int Y2;
-        int prob = 30;
+        List<int> channelIndexes = new List<int>();
         int W = 700;
         int H = 150;
         IntervalOsc inter;
@@ -44,18 +30,18 @@ namespace WindowsApp
             if (charts.Count > 0)
             {
                 W = Width;
-                H = (Height - 40 - prob) / charts.Count;
+                H = (Height - 40 - margin) / charts.Count;
                 SetScale();
             }
         }
 
-        public void Init(int n)
+        public override void Init(int channelIndex)
         {
             PointF[] whiteData = new PointF[signal.CountOfSamples];
             data = new PointF[signal.CountOfSamples];
 
             form = (List<TextBox>) signal.GetHash("model");
-            CreateChart(n);
+            curChart = CreateChart(channelIndex);
 
             switch ((int) signal.GetHash("model_k"))
             {
@@ -72,7 +58,7 @@ namespace WindowsApp
                     break;
             }
 
-            charts.Add(chart);
+            charts.Add(curChart);
             float y;
             for (int i = 0; i < signal.CountOfSamples; i++)
             {
@@ -197,27 +183,27 @@ namespace WindowsApp
                         break;
                 }
 
-                chart.Series[0].Points.AddXY(i, data[i].Y);
+                curChart.Series[0].Points.AddXY(i, data[i].Y);
             }
 
             // Случайный сигнал АРСС (p,q) - сбрасываем значения p и q, иначе попытается открыть сразу второе окно с a и b и упадет
             signal.RemoveHash("modell_t");
 
-            chart.MouseDown += position1;
-            chart.MouseUp += position2;
+            curChart.MouseDown += position1;
+            curChart.MouseUp += position2;
             Width = W;
-            Height = prob + H * charts.Count + 40;
-            chart.AxisScrollBarClicked += scroller;
-            chart.AxisViewChanged += viewchanged;
-            chart.Tag = signal.GetHash("model_k");
+            Height = margin + H * charts.Count + 40;
+            curChart.AxisScrollBarClicked += scroller;
+            curChart.AxisViewChanged += viewchanged;
+            curChart.Tag = signal.GetHash("model_k");
         }
 
-        private void CreateChart(int n)
+        protected override Chart CreateChart(int channelIndex)
         {
-            channelsList.Add(n);
-            chart = new Chart();
+            channelIndexes.Add(channelIndex);
+            var chart = new Chart();
             chart.Parent = this;
-            chart.SetBounds(0, prob + H * charts.Count, W, H);
+            chart.SetBounds(0, margin + H * charts.Count, W, H);
 
             ChartArea area = new ChartArea();
             area.Name = "myGraph";
@@ -240,8 +226,8 @@ namespace WindowsApp
             area.BorderColor = Color.Black;
             area.BorderWidth = 1;
 
-            area.AxisX.MajorGrid.Enabled = GridMode;
-            area.AxisY.MajorGrid.Enabled = GridMode;
+            area.AxisX.MajorGrid.Enabled = gridMode;
+            area.AxisY.MajorGrid.Enabled = gridMode;
             area.AxisY.MajorGrid.LineColor = Color.Gray;
             area.AxisX.MajorGrid.LineColor = Color.Gray;
 
@@ -264,6 +250,7 @@ namespace WindowsApp
             chart.Series.Add(series1);
 
             area.AxisX.ScaleView.Zoom(0, signal.CountOfSamples);
+            return chart;
         }
 
 
@@ -273,7 +260,7 @@ namespace WindowsApp
             Y1 = e.Y;
             if (e.Button == MouseButtons.Right)
             {
-                chart = (Chart) sender;
+                curChart = (Chart) sender;
             }
         }
 
@@ -283,7 +270,7 @@ namespace WindowsApp
             Y2 = e.Y;
         }
 
-        public void ZoomCharts(double x1, double x2)
+        public void Zoom(double x1, double x2)
         {
             foreach (Chart ch in charts)
                 ch.ChartAreas["myGraph"].AxisX.ScaleView.Zoom(x1, x2);
@@ -312,15 +299,15 @@ namespace WindowsApp
             return minValue;
         }
 
-        private void SetScale()
+        protected override void SetScale()
         {
             for (int i = 0; i < charts.Count; i++)
             {
-                charts[i].Bounds = new Rectangle(0, prob + H * i, W, H);
+                charts[i].Bounds = new Rectangle(0, margin + H * i, W, H);
                 if (localScaleMode)
                 {
                     int start = (int) signal.BeginRangeOsci;
-                    int end = signal.EndRangeOsci == 0 ? data.Length : (int) signal.EndRangeOsci;
+                    int end = signal.EndRangeOsci == 0 ? data.Length : signal.EndRangeOsci;
                     charts[i].ChartAreas["myGraph"].AxisY.Minimum = Min(data, start, end);
                     charts[i].ChartAreas["myGraph"].AxisY.Maximum = Max(data, start, end);
                 }
@@ -332,32 +319,31 @@ namespace WindowsApp
             }
 
             Width = W;
-            Height = prob + H * charts.Count + 40;
+            Height = margin + H * charts.Count + 40;
         }
 
         private void scroller(object sender, ScrollBarEventArgs e)
         {
-            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
+            signal.SetBeginRangeOsci((int) e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int) (e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void viewchanged(object sender, ViewEventArgs e)
         {
-            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
+            signal.SetBeginRangeOsci((int) e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int) (e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int channelIndex;
-            for (channelIndex = 0; !chart.Equals(charts[channelIndex]); channelIndex++)
+            for (channelIndex = 0; !curChart.Equals(charts[channelIndex]); channelIndex++)
             {
             }
 
-            remove(channelIndex);
+            Remove(channelIndex);
         }
-
-        public void remove(int k)
+        public void Remove(int k)
         {
             if (charts.Count == 1)
                 Close();
@@ -367,11 +353,9 @@ namespace WindowsApp
                 charts[k].Dispose();
                 charts.RemoveAt(k);
                 SetScale();
-                channelsList.RemoveAt(k);
+                channelIndexes.RemoveAt(k);
             }
         }
-
-
         public void close(object sender, FormClosedEventArgs e)
         {
             signal.SetModel(null);
@@ -422,12 +406,12 @@ namespace WindowsApp
         {
             if (charts.Count > 0)
             {
-                GridMode = !GridMode;
-                toolStripButton1.Checked = GridMode;
+                gridMode = !gridMode;
+                toolStripButton1.Checked = gridMode;
                 for (int i = 0; i < charts.Count; i++)
                 {
-                    charts[i].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = GridMode;
-                    charts[i].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = GridMode;
+                    charts[i].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = gridMode;
+                    charts[i].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = gridMode;
                 }
             }
         }

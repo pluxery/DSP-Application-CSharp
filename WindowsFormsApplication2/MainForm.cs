@@ -312,13 +312,13 @@ namespace WindowsApp
                     for (int j = 0; j < signal.Oscillogram.charts.Count(); j++)
                     {
                         if (signal.Oscillogram.charts[j].Series[0].LegendText == clickedItem.Text)
-                            signal.Oscillogram.remove(j); //передаём номер графика на удаление
+                            signal.Oscillogram.Remove(j); //передаём номер графика на удаление
                     }
                 else
-                    signal.Oscillogram.remove(0);
+                    signal.Oscillogram.Remove(0);
             }
             else
-                signal.CreateOscillogram((int) clickedItem.Tag);
+                signal.Oscillogram = (Oscillogram)new FactoryOscillogram().Create((int)clickedItem.Tag);
         }
 
         private void StatMenuItemClickHandler(object sender, EventArgs e)
@@ -330,37 +330,13 @@ namespace WindowsApp
                     for (int j = 0; j < signal.Oscillogram.charts.Count(); j++)
                     {
                         if (signal.Oscillogram.charts[j].Series[0].LegendText == clickedItem.Text)
-                            signal.Oscillogram.remove(j);
+                            signal.Oscillogram.Remove(j);
                     }
                 else
-                    signal.Oscillogram.remove(0);
+                    signal.Oscillogram.Remove(0);
             }
             else
-                signal.CreateStatAsField((int) clickedItem.Tag);
-            return;
-            //TODO
-            //ToolStripMenuItem clickedItem = (ToolStripMenuItem) sender;
-
-            Statistic st = (Statistic) signal.GetHash("stat");
-            if (clickedItem.CheckState.Equals(CheckState.Checked))
-            {
-                if (st != null)
-                    if (st.charts.Count() > 1)
-                        for (int j = 0; j < st.charts.Count(); j++)
-                        {
-                            if (st.charts[j].Series[0].LegendText == clickedItem.Text)
-                                st.RemoveChart(j);
-                        }
-                    else
-                        st.RemoveChart(0);
-            }
-            else
-            {
-                // signal.Statistic = new Statistic(this);
-                // signal.Statistic.Init(0);
-                // signal.Statistic.Show();
-                signal.CreateStatistic((int) clickedItem.Tag);
-            }
+                signal.Statistic = (Statistic)new FactoryStatistic().Create((int)clickedItem.Tag);
         }
 
         private void ДПТItemClickHandler(object sender, EventArgs e)
@@ -379,7 +355,7 @@ namespace WindowsApp
                     signal.Fft.Remove(0);
             }
             else
-                signal.CreateFFT((int) clickedItem.Tag);
+                signal.Fft = (Fft)new FactoryFft().Create((int)clickedItem.Tag);
         }
 
         private void CorrelItemClickHandler(object sender, EventArgs e)
@@ -437,17 +413,17 @@ namespace WindowsApp
 
         private void modelling(object sender, EventArgs e)
         {
-            delete_models();
+            DeleteModels();
             signal.Textmod = sender.ToString();
 
             modellng = new ModelInputParams();
             modellng.Show();
-            signal.SetModelling(modellng);
+            signal.SetModelInputParams(modellng);
         }
 
         private void арифметическаяСуперпозицияToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            delete_models();
+            DeleteModels();
             signal.Textmod = sender.ToString();
             if (signal.CheckHash("super"))
             {
@@ -462,14 +438,14 @@ namespace WindowsApp
 
         private void мультипликативнаяСуперпозицияToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            delete_models();
+            DeleteModels();
             signal.Textmod = sender.ToString();
             sup = new Super();
             sup.Show();
             signal.SetHash("super", sup);
         }
 
-        private void delete_models()
+        private void DeleteModels()
         {
             if (signal.CheckHash("super"))
             {
@@ -482,7 +458,7 @@ namespace WindowsApp
             if (signal.ModelInputParams != null)
             {
                 signal.ModelInputParams.Close();
-                signal.SetModelling(null);
+                signal.SetModelInputParams(null);
             }
 
             if (signal.Model != null)

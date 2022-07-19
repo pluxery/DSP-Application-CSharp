@@ -13,8 +13,8 @@ namespace WindowsApp
 {
     public partial class Spectrogram : Form
     {
-        private Signal signal = Signal.GetInstance();
-        bool gridMode;
+        protected bool gridMode =false;
+        private static Signal signal = AbstractGraphic.signal;
         private double Coeff { get; set; }
         private double maxA { get; set; }
         private char[] colorPlots { get; set; }
@@ -32,41 +32,29 @@ namespace WindowsApp
         private byte[][] hot;
 
         private int curChannelIndex;
-        private List<string> timeList = new List<string>();
+        private static List<string> timeList = new List<string>();
 
 
         public Spectrogram(MainForm parrentForm)
         {
             InitializeComponent();
+            InitColorPallete();
+            SetAxisXTimeLabel();
             trackBar1.Maximum = 100;
             trackBar1.Value = trackBar1.Maximum / 3;
             trackBar1.TickStyle = TickStyle.None;
             trackBar2.Maximum = 8;
             trackBar2.Minimum = 0;
             trackBar2.Value = 3;
-
-            var seconds = signal.CountOfSamples / signal.Frequency;
-            SetAxisXLabel(seconds);
+            trackBar1.Scroll += trackBar1_Scroll;
         }
 
-        private void SetAxisXLabel(double seconds)
+        private void SetAxisXTimeLabel()
         {
-            if (seconds >= 86400 * 2)
+            for (int i = 0; i < signal.CountOfSamples; i++)
             {
-                for (int i = 0; i < signal.CountOfSamples; i++)
-                {
-                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
-                    timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
-                }
-                
-            }
-            else if (seconds < 86400 * 2)
-            {
-                for (int i = 0; i < signal.CountOfSamples; i++)
-                {
-                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
-                    timeList.Add(time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
-                }
+                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
             }
         }
 
@@ -78,31 +66,26 @@ namespace WindowsApp
             }
         }
 
-        public void Init(int channelIndex)
+        public  void Init(int channelIndex)
         {
             curChannelIndex = channelIndex;
             Text = signal.Names[channelIndex] + " - Спектограмма";
-            InitColorPallete();
-            ComputeSpectrogramArray();
-            DrawPicture();
             CreateChart(channelIndex);
-            var samples = new double[signal.CountOfSamples]; //просто надо чем то заполнить график для DataBindXY
+            Compute();
+            DrawPicture();
+            var samples = new double[signal.CountOfSamples];
             for (int i = 0; i < signal.CountOfSamples; i++)
             {
                 samples[i] = i + 1;
                 chart1.Series[0].Points.AddXY(i, 1);
             }
-
             chart1.Series[0].Points.DataBindXY(timeList, samples);
-
             chart1.Show();
-
-            trackBar1.Scroll += trackBar1_Scroll;
         }
 
         public void Update()
         {
-            ComputeSpectrogramArray();
+            Compute();
             DrawPicture();
         }
 
@@ -111,20 +94,20 @@ namespace WindowsApp
             chart1.ChartAreas["ChartArea1"].AxisX.ScaleView.Zoom(x0, x1);
         }
 
-        private string GetLabelFormat(double min, double max)
+        private string GetAxisYLabelFormat(double min, double max)
         {
             var difference = max - min;
+            
             if (difference >= 10)
             {
                 return "N0";
             }
-
-            if (difference < 10 && difference >= 1)
+            if (difference >= 1)
             {
                 return "N1";
             }
 
-            if (difference < 1 && difference > 0.1)
+            if (difference > 0.1)
             {
                 return "N2";
             }
@@ -132,18 +115,24 @@ namespace WindowsApp
             return "N3";
         }
 
-        private void CreateChart(int channelIndex)
+        private void  CreateChart(int channelIndex)
         {
+            //var chart = new Chart();
+            // var area = new ChartArea();
+            // area.Name = "ChartArea1";
+            // chart.ChartAreas.Add(area);
             chart1.ChartAreas["ChartArea1"].AxisX.ScrollBar.Enabled = false;
             chart1.ChartAreas["ChartArea1"].AxisX.Minimum = 0;
             chart1.ChartAreas["ChartArea1"].AxisX.Maximum = signal.CountOfSamples;
             chart1.ChartAreas["ChartArea1"].AxisY.Minimum = 0;
             chart1.ChartAreas["ChartArea1"].AxisY.Maximum = signal.Frequency / 2;
-            chart1.ChartAreas["ChartArea1"].AxisY.LabelStyle.Format = GetLabelFormat(0, signal.Frequency);
+            chart1.ChartAreas["ChartArea1"].AxisY.LabelStyle.Format = GetAxisYLabelFormat(0, signal.Frequency);
             chart1.ChartAreas["ChartArea1"].AxisX.LabelStyle.Format = "N0";
             chart1.ChartAreas["ChartArea1"].BackImageAlignment = ChartImageAlignmentStyle.Center;
             chart1.ChartAreas["ChartArea1"].BackImageWrapMode = ChartImageWrapMode.Scaled;
             chart1.ChartAreas["ChartArea1"].AxisY.Title = signal.Names[channelIndex] + " - частота Гц ";
+            // var series = new Series();
+            // chart.Series.Add(series);
             chart1.Series[0].ChartType = SeriesChartType.Line;
             chart1.Series[0].Color = Color.Transparent;
             chart1.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.White;
@@ -155,25 +144,27 @@ namespace WindowsApp
             {
                 Zoom(signal.BeginRangeOsci, signal.EndRangeOsci);
             }
+
+            //return chart;
+
         }
 
         private void scroller(object sender, ScrollBarEventArgs e)
         {
         }
 
-        private double[] GetPointsFragment(in double[] arr, int start, int end)
+        private double[] GetPointsRange(in double[] arr, int start, int end)
         {
-            var points = new List<double>();
-            for (int i = start; i < end; i++)
+            var points = new double[end - start];
+            for (int i = start, j = 0; i < end; i++, j++)
             {
-                points.Add(arr[i]);
+                points[j] = arr[i];
             }
-
-            return points.ToArray();
+            return points;
         }
 
 
-        private void ComputeSpectrogramArray()
+        private void Compute()
         {
             int Ns = width;
             int K = height;
@@ -209,7 +200,7 @@ namespace WindowsApp
                 points[i] = signal.Points[curChannelIndex, i].Y;
             }
 
-            var curPointsFragment = GetPointsFragment(points, (int) signal.BeginRangeOsci, (int) signal.EndRangeOsci);
+            var pointsFragment = GetPointsRange(points, signal.BeginRangeOsci, signal.EndRangeOsci);
 
             for (int ns = 0; ns < Ns; ns++)
             {
@@ -218,7 +209,7 @@ namespace WindowsApp
                 {
                     try
                     {
-                        x[i] = curPointsFragment[n0 + i];
+                        x[i] = pointsFragment[n0 + i];
                     }
                     catch
                     {
@@ -270,8 +261,7 @@ namespace WindowsApp
                         amplitude[i] *= (1 / signal.Frequency);
                     }
                 }
-
-                //todo L > 1 написать условие
+                
                 for (int i = 0; i < K; i++)
                 {
                     A[ns + i * Ns] = amplitude[i];

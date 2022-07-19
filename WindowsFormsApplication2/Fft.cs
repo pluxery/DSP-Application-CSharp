@@ -9,26 +9,12 @@ using MathNet.Numerics.IntegralTransforms;
 
 namespace WindowsApp
 {
-    public partial class Fft : Form
+    public partial class Fft : AbstractGraphic
     {
-        private bool localScaleMode;
-        private bool sharpMode;
-        private bool markerMode;
-
-        Signal signal = Signal.GetInstance();
         private int halfSize = Signal.GetInstance().CountOfSamples / 2;
-
-        private string[] freqValues = new string[Signal.GetInstance().CountOfSamples / 2];
-
+        private string[] freqValues;
         public List<Chart[]> fftCharts = new List<Chart[]>();
-        private Chart curChart;
-        private List<int> channelsIndexes = new List<int>();
-
-        private int X1;
-        private int Y1;
-        private int X2;
-        private int Y2;
-
+        
         private bool isLogMode;
         private bool isSmooth;
 
@@ -36,8 +22,7 @@ namespace WindowsApp
         private double[] im;
         private double reX0;
         private double imX0;
-
-        const int margin = 30;
+        
         private IntervalFFT intervalFft;
         private int width = 700;
         private int height = 200;
@@ -61,13 +46,37 @@ namespace WindowsApp
         public Fft(MainForm ParrentForm)
         {
             InitializeComponent();
+            ContextStrip();
+            markerMode = false;
+            tabControl1 = new TabControl();
+            tabControl1.Location = new Point(0, 27);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.TabIndex = 1;
+            tabPage1 = new TabPage();
+            tabPage1.Location = new Point(0, 0);
+            tabPage1.Name = "tabPage1";
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Амплитудный спектр";
+            tabPage1.UseVisualStyleBackColor = true;
+            tabPage1.ContextMenuStrip = contextMenuStrip1;
+            tabPage2 = new TabPage();
+            tabPage2.Location = new Point(0, 0);
+            tabPage2.Name = "tabPage1";
+            tabPage2.TabIndex = 0;
+            tabPage2.Text = "СПМ";
+            tabPage2.UseVisualStyleBackColor = true;
+            tabPage2.ContextMenuStrip = contextMenuStrip1;
+
+            freqValues = new string[Signal.GetInstance().CountOfSamples / 2];
+
             for (int i = 0; i < halfSize; i++)
             {
                 freqValues[i] = (Math.Round(i * (signal.Frequency / halfSize) / 2, 7)).ToString();
             }
         }
 
-        public void Redraw()
+        public void UpdateFft()
         {
             Zoom(signal.BeginRangeOsci, signal.EndRangeOsci);
         }
@@ -104,7 +113,7 @@ namespace WindowsApp
             }
         }
 
-        private void ComputeFft(int channelIndex)
+        protected override void Compute(int channelIndex)
         {
             int N = signal.CountOfSamples;
             re = new double[N];
@@ -180,40 +189,17 @@ namespace WindowsApp
             this.contextMenuStrip1.ResumeLayout(false);
         }
 
-        public void Init(int channelIndex)
+        public override void Init(int channelIndex)
         {
             signal.EndRangeFft = signal.CountOfSamples / 2;
-            var fd = signal.Frequency;
-            if (contextMenuStrip1 == null)
-                ContextStrip();
-            if (!channelsIndexes.Contains(channelIndex))
+            if (!channelIndexes.Contains(channelIndex))
             {
-                channelsIndexes.Add(channelIndex);
-                var chartsTab = new Chart[4];
-                ComputeFft(channelIndex);
-
-                if (tabControl1 == null)
-                {
-                    tabControl1 = new TabControl();
-                    tabControl1.Location = new Point(0, 27);
-                    tabControl1.Name = "tabControl1";
-                    tabControl1.SelectedIndex = 0;
-                    tabControl1.TabIndex = 1;
-                }
-
-                if (tabPage1 == null)
-                {
-                    tabPage1 = new TabPage();
-                    tabPage1.Location = new Point(0, 0);
-                    tabPage1.Name = "tabPage1";
-                    tabPage1.TabIndex = 0;
-                    tabPage1.Text = "Амплитудный спектр";
-                    tabPage1.UseVisualStyleBackColor = true;
-                    tabPage1.ContextMenuStrip = contextMenuStrip1;
-                }
+                channelIndexes.Add(channelIndex);
+                var chartsByTab = new Chart[2];
+                Compute(channelIndex);
 
                 curChart = CreateChart(channelIndex);
-                chartsTab[0] = curChart;
+                chartsByTab[0] = curChart;
                 var yValues = new double[halfSize];
                 if (signal.FFTMode == 2)
                 {
@@ -238,19 +224,8 @@ namespace WindowsApp
                 curChart.Series[0].Points.DataBindXY(freqValues, yValues);
                 tabPage1.Controls.Add(curChart);
 
-                if (tabPage2 == null)
-                {
-                    tabPage2 = new TabPage();
-                    tabPage2.Location = new Point(0, 0);
-                    tabPage2.Name = "tabPage1";
-                    tabPage2.TabIndex = 0;
-                    tabPage2.Text = "СПМ";
-                    tabPage2.UseVisualStyleBackColor = true;
-                    tabPage2.ContextMenuStrip = contextMenuStrip1;
-                }
-
                 curChart = CreateChart(channelIndex);
-                chartsTab[1] = curChart;
+                chartsByTab[1] = curChart;
                 if (signal.FFTMode == 2)
                 {
                     var y = Math.Abs(reX0 * reX0 + imX0 * imX0);
@@ -273,7 +248,7 @@ namespace WindowsApp
 
                 curChart.Series[0].Points.DataBindXY(freqValues, yValues);
                 tabPage2.Controls.Add(curChart);
-                fftCharts.Add(chartsTab);
+                fftCharts.Add(chartsByTab);
 
                 if (!tabControl1.Controls.Contains(tabPage1))
                     tabControl1.Controls.Add(tabPage1);
@@ -291,13 +266,13 @@ namespace WindowsApp
             }
         }
 
-        private Chart CreateChart(int channelIdx)
+        protected override Chart CreateChart(int channelIndex)
         {
             var chart = new Chart();
-            signal.MainForm.CheckItemFFT(channelIdx);
+            signal.MainForm.CheckItemFFT(channelIndex);
             chart = new Chart();
-            chart.Name = signal.Names[channelIdx];
-            chart.Tag = channelIdx;
+            chart.Name = signal.Names[channelIndex];
+            chart.Tag = channelIndex;
             chart.Parent = this;
             chart.Size = new Size(width, height);
             chart.Location = new Point(0, this.height * fftCharts.Count);
@@ -314,8 +289,8 @@ namespace WindowsApp
             area.BorderDashStyle = ChartDashStyle.Solid;
             area.BorderColor = Color.Black;
             area.BorderWidth = 1;
-            area.AxisX.MajorGrid.Enabled = sharpMode;
-            area.AxisY.MajorGrid.Enabled = sharpMode;
+            area.AxisX.MajorGrid.Enabled = gridMode;
+            area.AxisY.MajorGrid.Enabled = gridMode;
             area.AxisY.MajorGrid.LineColor = Color.Gray;
             area.AxisX.MajorGrid.LineColor = Color.Gray;
             area.AxisY.IsLogarithmic = isLogMode;
@@ -333,10 +308,10 @@ namespace WindowsApp
             chart.Series.Clear();
             chart.Series.Add(series);
             chart.Series[0].ChartArea = "myGraph";
-            series.LegendText = signal.Names[channelIdx];
-            chart.Legends.Add(signal.Names[channelIdx]);
-            chart.Legends[signal.Names[channelIdx]].Docking = Docking.Top;
-            chart.Legends[signal.Names[channelIdx]].Alignment = StringAlignment.Center;
+            series.LegendText = signal.Names[channelIndex];
+            chart.Legends.Add(signal.Names[channelIndex]);
+            chart.Legends[signal.Names[channelIndex]].Docking = Docking.Top;
+            chart.Legends[signal.Names[channelIndex]].Alignment = StringAlignment.Center;
             chart.ChartAreas["myGraph"].AxisX.ScaleView.Zoom(0, halfSize);
             chart.MouseDown += Position1;
             chart.MouseUp += Position2;
@@ -346,19 +321,24 @@ namespace WindowsApp
             return chart;
         }
 
-        private void Tooltip(object sender, ToolTipEventArgs e) //при наведении на точку показывать значения X, Y
+        private void Tooltip(object sender, ToolTipEventArgs e)
         {
-            switch (e.HitTestResult.ChartElementType)
+            try
             {
-                case ChartElementType.DataPoint:
-                    var point = e.HitTestResult.Series.Points[e.HitTestResult.PointIndex];
-                    var x = curChart.Series[0].Points.IndexOf(point);
-                    var seconds = 2 / Convert.ToDouble(freqValues[e.HitTestResult.PointIndex]);
-                    var time = TimeSpan.FromSeconds(seconds);
-                    var period = time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с";
-                    e.Text = string.Format("Y = {1}\nX = {0}\nP = {2}", freqValues[e.HitTestResult.PointIndex],
-                        point.YValues[0], period);
-                    break;
+                switch (e.HitTestResult.ChartElementType)
+                {
+                    case ChartElementType.DataPoint:
+                        var point = e.HitTestResult.Series.Points[e.HitTestResult.PointIndex];
+                        var seconds = 1 / Convert.ToDouble(freqValues[e.HitTestResult.PointIndex]);
+                        var time = TimeSpan.FromSeconds(seconds);
+                        var period = time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с";
+                        e.Text = string.Format("Y = {1}\nX = {0}\nP = {2}", freqValues[e.HitTestResult.PointIndex],
+                            point.YValues[0], period);
+                        break;
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -386,7 +366,7 @@ namespace WindowsApp
         }
 
 
-        private void SetScale()
+        protected override void SetScale()
         {
             for (int i = 0; i < fftCharts.Count; i++)
             {
@@ -419,31 +399,7 @@ namespace WindowsApp
                 Height = margin * 3 + height * fftCharts.Count;
             }
         }
-
-        private double Min(in DataPointCollection points, int beginIndex, int endIndex)
-        {
-            double min = Double.MaxValue;
-            for (int i = beginIndex; i < endIndex; i++)
-            {
-                if (min > points[i].YValues[0])
-                    min = points[i].YValues[0];
-            }
-
-            return min;
-        }
-
-        private double Max(in DataPointCollection points, int beginIndex, int endIndex)
-        {
-            double max = Double.MinValue;
-            for (int i = beginIndex; i < endIndex; i++)
-            {
-                if (max < points[i].YValues[0])
-                    max = points[i].YValues[0];
-            }
-
-            return max;
-        }
-
+        
         private void Scroller(object sender, ScrollBarEventArgs e)
         {
         }
@@ -484,8 +440,8 @@ namespace WindowsApp
 
                 fftCharts.RemoveAt(k);
                 SetScale();
-                signal.MainForm.UnCheckItemDPF(channelsIndexes[k]);
-                channelsIndexes.RemoveAt(k);
+                signal.MainForm.UnCheckItemDPF(channelIndexes[k]);
+                channelIndexes.RemoveAt(k);
             }
         }
 
@@ -526,14 +482,14 @@ namespace WindowsApp
         {
             if (fftCharts.Count > 0)
             {
-                sharpMode = !sharpMode;
-                grid.Checked = sharpMode;
+                gridMode = !gridMode;
+                grid.Checked = gridMode;
                 for (int i = 0; i < fftCharts.Count; i++)
                 {
                     for (int j = 0; j < 2; j++)
                     {
-                        fftCharts[i][j].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = sharpMode;
-                        fftCharts[i][j].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = sharpMode;
+                        fftCharts[i][j].ChartAreas["myGraph"].AxisX.MajorGrid.Enabled = gridMode;
+                        fftCharts[i][j].ChartAreas["myGraph"].AxisY.MajorGrid.Enabled = gridMode;
                     }
                 }
             }
@@ -600,11 +556,11 @@ namespace WindowsApp
         }
 
         private List<double>
-            GetFftArray(int numTabPage,
+            GetFftArrayByPage(int numTabPage,
                 int channelIndex) // для какой страницы создаем точки Y (Амплитудный или СПМ)
         {
             var YValues = new List<double>();
-            ComputeFft(channelIndex);
+            Compute(channelIndex);
             if (numTabPage == 0)
             {
                 for (int i = 0; i < halfSize; i++)
@@ -642,7 +598,7 @@ namespace WindowsApp
                         for (int page = 0; page < 2; page++)
                         {
                             chart[page].Series[0].Points.Clear();
-                            fft = GetFftArray(page, channelsIndexes[idx]);
+                            fft = GetFftArrayByPage(page, channelIndexes[idx]);
                             for (int x = 0; x < halfSize; x++)
                             {
                                 chart[page].Series[0].Points.AddXY(x, fft[x]);
@@ -663,7 +619,7 @@ namespace WindowsApp
                         for (int page = 0; page < 2; page++)
                         {
                             smoothYValues.Clear();
-                            fft = GetFftArray(page, channelsIndexes[idx]);
+                            fft = GetFftArrayByPage(page, channelIndexes[idx]);
                             for (int i = smoothVal; i < halfSize - smoothVal; i++)
                             {
                                 double avgYVal = 0;
@@ -709,12 +665,12 @@ namespace WindowsApp
                     {
                         yValues.Clear();
                         chart[page].Series[0].Points.Clear();
-                        yValues = GetFftArray(page, channelsIndexes[channelIndex]); 
+                        yValues = GetFftArrayByPage(page, channelIndexes[channelIndex]);
                         for (int x = 0; x < halfSize; x++)
                         {
                             chart[page].Series[0].Points.AddXY(x, yValues[x]);
-                            
                         }
+
                         chart[page].Series[0].Points.DataBindXY(freqValues, yValues);
 
 
