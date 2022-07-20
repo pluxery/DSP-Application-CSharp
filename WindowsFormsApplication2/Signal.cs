@@ -235,8 +235,7 @@ namespace WindowsApp
             if (Fft != null)
                 Fft.Zoom(Convert.ToDouble(BeginRangeFft), Convert.ToDouble(EndRangeFft));
         }
-
-
+        
         public void CloseOscillogram()
         {
             if (Oscillogram != null)
@@ -268,25 +267,8 @@ namespace WindowsApp
         {
             return hash.ContainsKey(objectName);
         }
-        
-        public void CreateSpectogram(int channelIndex)
-        {
-            if (Spectrogram == null)
-            {
-                Spectrogram = new Spectrogram(MainForm);
-            }
-            else
-            {
-                Spectrogram.Close();
-                Spectrogram = new Spectrogram(MainForm);
-                Spectrogram.MdiParent = MainForm;
-            }
 
-            Spectrogram.Init(channelIndex);
-            Spectrogram.Show();
-        }
-        
-        public void CreateCorrelation(int channelIndex)
+        public void CreateCorrelation(int channelIndex)//create Factory
         {
             if (Correlation == null)
             {

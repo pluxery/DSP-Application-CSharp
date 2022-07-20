@@ -6,7 +6,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WindowsApp
 {
-    public  class AbstractGraphic:Form
+    public  class AbstractGraphic:Form //без ключевого слова abstract т.к. designer-конструктор будет выдавать ошибку 
     {
         protected bool localScaleMode=false;
         protected bool gridMode =false;
@@ -17,10 +17,6 @@ namespace WindowsApp
         protected Chart curChart;
         public List<Chart> charts = new List<Chart>();
         
-        protected int X1;
-        protected int Y1;
-        protected int X2;
-        protected int Y2;
         protected const int margin = 30;
         
         protected AbstractGraphic(){}

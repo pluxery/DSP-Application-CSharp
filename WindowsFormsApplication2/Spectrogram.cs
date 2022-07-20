@@ -11,10 +11,8 @@ using MathNet.Numerics.IntegralTransforms;
 
 namespace WindowsApp
 {
-    public partial class Spectrogram : Form
+    public partial class Spectrogram : AbstractGraphic
     {
-        protected bool gridMode =false;
-        private static Signal signal = AbstractGraphic.signal;
         private double Coeff { get; set; }
         private double maxA { get; set; }
         private char[] colorPlots { get; set; }
@@ -51,10 +49,13 @@ namespace WindowsApp
 
         private void SetAxisXTimeLabel()
         {
-            for (int i = 0; i < signal.CountOfSamples; i++)
-            {
-                TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
-                timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+            if (timeList.Count!=signal.CountOfSamples){
+                timeList.Clear();
+                for (int i = 0; i < signal.CountOfSamples; i++)
+                {
+                    TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
+                    timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
+                }
             }
         }
 
@@ -66,12 +67,12 @@ namespace WindowsApp
             }
         }
 
-        public  void Init(int channelIndex)
+        public override void Init(int channelIndex)
         {
             curChannelIndex = channelIndex;
             Text = signal.Names[channelIndex] + " - Спектограмма";
             CreateChart(channelIndex);
-            Compute();
+            Compute(channelIndex);
             DrawPicture();
             var samples = new double[signal.CountOfSamples];
             for (int i = 0; i < signal.CountOfSamples; i++)
@@ -85,7 +86,7 @@ namespace WindowsApp
 
         public void Update()
         {
-            Compute();
+            Compute(curChannelIndex);
             DrawPicture();
         }
 
@@ -115,12 +116,8 @@ namespace WindowsApp
             return "N3";
         }
 
-        private void  CreateChart(int channelIndex)
+        private void CreateChart(int channelIndex)
         {
-            //var chart = new Chart();
-            // var area = new ChartArea();
-            // area.Name = "ChartArea1";
-            // chart.ChartAreas.Add(area);
             chart1.ChartAreas["ChartArea1"].AxisX.ScrollBar.Enabled = false;
             chart1.ChartAreas["ChartArea1"].AxisX.Minimum = 0;
             chart1.ChartAreas["ChartArea1"].AxisX.Maximum = signal.CountOfSamples;
@@ -131,8 +128,6 @@ namespace WindowsApp
             chart1.ChartAreas["ChartArea1"].BackImageAlignment = ChartImageAlignmentStyle.Center;
             chart1.ChartAreas["ChartArea1"].BackImageWrapMode = ChartImageWrapMode.Scaled;
             chart1.ChartAreas["ChartArea1"].AxisY.Title = signal.Names[channelIndex] + " - частота Гц ";
-            // var series = new Series();
-            // chart.Series.Add(series);
             chart1.Series[0].ChartType = SeriesChartType.Line;
             chart1.Series[0].Color = Color.Transparent;
             chart1.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.White;
@@ -144,8 +139,6 @@ namespace WindowsApp
             {
                 Zoom(signal.BeginRangeOsci, signal.EndRangeOsci);
             }
-
-            //return chart;
 
         }
 
@@ -164,7 +157,7 @@ namespace WindowsApp
         }
 
 
-        private void Compute()
+        protected override void Compute(int channelIndex)
         {
             int Ns = width;
             int K = height;
@@ -197,7 +190,7 @@ namespace WindowsApp
             var points = new double[signal.CountOfSamples];
             for (int i = 0; i < signal.CountOfSamples; i++)
             {
-                points[i] = signal.Points[curChannelIndex, i].Y;
+                points[i] = signal.Points[channelIndex, i].Y;
             }
 
             var pointsFragment = GetPointsRange(points, signal.BeginRangeOsci, signal.EndRangeOsci);

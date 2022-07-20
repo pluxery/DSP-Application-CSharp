@@ -54,4 +54,19 @@ namespace WindowsApp
         }
     }
     
+    public class FactorySpectrogram : Factory
+    {
+        public override AbstractGraphic Create(int channelIndex)
+        {
+            if (signal.Spectrogram != null)
+            {
+                signal.Spectrogram.Close();
+            }
+            var spectrogram = new Spectrogram(signal.MainForm);
+            spectrogram.Init(channelIndex);
+            spectrogram.Show();
+            return spectrogram;
+        }
+    }
+    
 }

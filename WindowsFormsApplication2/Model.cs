@@ -17,7 +17,11 @@ namespace WindowsApp
         List<int> channelIndexes = new List<int>();
         int W = 700;
         int H = 150;
-        IntervalOsc inter;
+        IntervalOsc intervalOsc;
+        private int X1;
+        private int Y1;
+        private int X2;
+        private int Y2;
 
 
         public Model(MainForm ParrentForm)
@@ -446,9 +450,9 @@ namespace WindowsApp
 
         private void toolStripButton5_Click(object sender, EventArgs e)
         {
-            inter = new IntervalOsc();
-            inter.Hide();
-            inter.Show();
+            intervalOsc = new IntervalOsc();
+            intervalOsc.Hide();
+            intervalOsc.Show();
         }
 
         private void Model_Load(object sender, EventArgs e)

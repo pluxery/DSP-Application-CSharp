@@ -17,6 +17,10 @@ namespace WindowsApp
         private int curChannelIndex;
         private int W = 400;
         private int H = 200;
+        private int X1;
+        private int Y1;
+        private int X2;
+        private int Y2;
 
         public Statistic(MainForm ParrentForm)
         {

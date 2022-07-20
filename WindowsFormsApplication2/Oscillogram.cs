@@ -9,13 +9,18 @@ namespace WindowsApp
     public partial class Oscillogram : AbstractGraphic
     {
         private Dictionary<string, double[]> yValuesByChannel = new Dictionary<string, double[]>();
-        private List<int> samples = new List<int>();
-        private List<string> timeList = new List<string>();
+        private static List<int> samples = new List<int>();
+        private static List<string> timeList = new List<string>();
         IntervalOsc interval;
         int W = 900;
         int H = 200;
         private int curChannelIndex;
-        private bool AxisXLabelMode;//false - samples; true - time
+        private bool AxisXLabelMode; //false - samples; true - time
+        private int X1;
+        private int Y1;
+        private int X2;
+        private int Y2;
+
         private void resize(object sender, EventArgs e)
         {
             if (charts.Count > 0)
@@ -35,14 +40,18 @@ namespace WindowsApp
             InitializeComponent();
             SetAxisXTimeLabel();
         }
-        private void SetAxisXTimeLabel()//todo сделать лэйбл в зависимости от интервала времени
+
+        private void SetAxisXTimeLabel() //todo сделать лэйбл в зависимости от интервала времени
         {
-            for (int i = 0; i < signal.CountOfSamples; i++)
+            if (timeList.Count!=signal.CountOfSamples){
+                timeList.Clear();
+                for (int i = 0; i < signal.CountOfSamples; i++)
                 {
+                    samples.Add(i);
                     TimeSpan time = TimeSpan.FromSeconds(i * (1 / signal.Frequency));
                     timeList.Add(time.Days + "д:" + time.Hours + "ч:" + time.Minutes + "м:" + time.Seconds + "с");
                 }
-            
+            }
         }
 
         public override void Init(int channelIndex)
@@ -51,15 +60,15 @@ namespace WindowsApp
             {
                 curChannelIndex = channelIndex;
                 curChart = CreateChart(channelIndex);
-                
+
                 charts.Add(curChart);
                 var yPoints = new double[signal.CountOfSamples];
                 for (int i = 0; i < signal.CountOfSamples; i++)
                 {
                     yPoints[i] = signal.Points[channelIndex, i].Y;
-                    samples.Add(i);
                     curChart.Series[0].Points.AddXY(i, signal.Points[channelIndex, i].Y);
                 }
+
                 yValuesByChannel[curChart.Name] = yPoints;
 
                 curChart.ChartAreas["myGraph"].AxisY.LabelStyle.Format = GetLabelFormat(
@@ -132,7 +141,7 @@ namespace WindowsApp
             Y1 = e.Y;
             if (e.Button == MouseButtons.Right)
             {
-                 curChart = (Chart) sender;
+                curChart = (Chart) sender;
             }
         }
 
@@ -163,13 +172,13 @@ namespace WindowsApp
             return "N3";
         }
 
-        public void Zoom(double x1, double x2) 
+        public void Zoom(double x1, double x2)
         {
             foreach (Chart ch in charts)
             {
                 ch.ChartAreas["myGraph"].AxisX.ScaleView.Zoom(x1, x2);
             }
-            
+
 
             if (signal.Spectrogram != null)
             {
@@ -178,13 +187,13 @@ namespace WindowsApp
 
             if (signal.Fft != null)
             {
-                if (x2 < signal.CountOfSamples/2)
-                    signal.Fft.Zoom(x1,x2);
+                if (x2 < signal.CountOfSamples / 2)
+                    signal.Fft.Zoom(x1, x2);
             }
 
             SetScale();
         }
-        
+
         protected override void SetScale()
         {
             for (int i = 0; i < charts.Count; i++)
@@ -192,8 +201,8 @@ namespace WindowsApp
                 charts[i].Bounds = new Rectangle(0, margin + H * i, W, H);
                 if (localScaleMode)
                 {
-                    var beginX =  signal.BeginRangeOsci;
-                    var endX =  signal.EndRangeOsci;
+                    var beginX = signal.BeginRangeOsci;
+                    var endX = signal.EndRangeOsci;
                     var minY = Min(charts[i].Series[0].Points, beginX, endX);
                     var maxY = Max(charts[i].Series[0].Points, beginX, endX);
                     charts[i].ChartAreas["myGraph"].AxisY.Minimum = minY;
@@ -218,12 +227,13 @@ namespace WindowsApp
 
         private void viewchanged(object sender, ViewEventArgs e)
         {
-            signal.SetBeginRangeOsci((int)e.ChartArea.AxisX.ScaleView.Position);
-            signal.SetEndRangeOsci((int)(e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
+            signal.SetBeginRangeOsci((int) e.ChartArea.AxisX.ScaleView.Position);
+            signal.SetEndRangeOsci((int) (e.ChartArea.AxisX.ScaleView.Position + e.ChartArea.AxisX.ScaleView.Size));
             if (signal.Spectrogram != null)
             {
                 signal.Spectrogram.Update();
             }
+
             if (signal.Statistic != null)
             {
                 foreach (var statistic in signal.Statistics)
@@ -234,7 +244,6 @@ namespace WindowsApp
             {
                 signal.Fft.UpdateFft();
             }
-
         }
 
         private void удалитьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -246,6 +255,7 @@ namespace WindowsApp
 
             Remove(level);
         }
+
         public void Remove(int k)
         {
             if (charts.Count == 1)
@@ -259,6 +269,7 @@ namespace WindowsApp
                 channelIndexes.RemoveAt(k);
             }
         }
+
         public void close(object sender, FormClosedEventArgs e)
         {
             signal.MainForm.UnCheckItem();
@@ -333,7 +344,6 @@ namespace WindowsApp
                 foreach (var chart in charts)
                 {
                     chart.Series[0].Points.DataBindXY(timeList, yValuesByChannel[chart.Name]);
-                    
                 }
             }
             else

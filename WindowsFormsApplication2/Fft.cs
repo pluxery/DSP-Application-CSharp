@@ -31,6 +31,10 @@ namespace WindowsApp
         private TabPage tabPage1, tabPage2;
         System.ComponentModel.Container components = new System.ComponentModel.Container();
         private ContextMenuStrip contextMenuStrip1;
+        private int X1;
+        private int Y1;
+        private int X2;
+        private int Y2;
 
 
         private void resize(object sender, EventArgs e)

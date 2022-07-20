@@ -282,7 +282,7 @@ namespace WindowsApp
             {
             }
 
-            signal.CreateSpectogram(channelIndex);
+            signal.Spectrogram = (Spectrogram)new FactorySpectrogram().Create(channelIndex);
         }
 
         private void статистикаToolStripMenuItem_Click(object sender, EventArgs e)
